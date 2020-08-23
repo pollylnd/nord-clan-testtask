@@ -6,18 +6,79 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const user = sequelizeClient.define('user', {
-  
-    email: {
-      type: DataTypes.STRING,
+
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
       allowNull: false,
-      unique: true
+      defaultValue: DataTypes.UUIDV4,
+      unique: true,
     },
-    password: {
+
+    userName: {
       type: DataTypes.STRING,
       allowNull: false
     },
-  
-  
+
+    email: {
+      type: DataTypes.STRING,
+      defaultValue: '',
+      validate: {
+        notEmpty: {
+          msg: 'emailNotNull'
+        },
+        not: {
+          args: ['^[а-яА-я]*$', 'i'],
+          regExp: '^[а-яА-я]*$',
+          msg: 'notHasBeenCyrillic'
+        },
+        isEmail: {
+          msg: 'emailNotValid'
+        },
+        max: {
+          args: 320,
+          msg: 'emailMaxErr'
+        },
+        isLowercase: {
+          msg: 'isLowercaseEmailErr'
+        },
+        isUnique: async (email) => {
+          await user.find({ where: { email } })
+            .then(result => {
+              if (result) {
+                throw new Error('isExistEmail');
+              }
+            });
+        }
+      }
+    },
+
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'passwordNotNull'
+        },
+        min: {
+          args: 6,
+          msg: 'PasswordLengthSmall'
+        },
+      }
+    },
+
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
+
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null
+    },
+
   }, {
     hooks: {
       beforeCount(options) {
