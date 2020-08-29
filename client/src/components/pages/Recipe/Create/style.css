@@ -1,0 +1,8 @@
+.create-recipe-selectors {
+  display: flex;
+  justify-content: space-around;
+}
+
+.recipe-ingr-form {
+  display: flex;
+}

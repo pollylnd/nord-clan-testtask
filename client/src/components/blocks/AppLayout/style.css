@@ -1,0 +1,32 @@
+
+.MuiAppBar-colorPrimary.topbar-wrapper {
+  background-color: #ffffff;
+}
+
+.topbar {
+  flex-grow: 1;
+}
+.topbar-menu-button {
+  border: 2px solid black;
+  padding: 5px;
+  border-radius: 0%;
+}
+.topbar-title {
+  flex-grow: 1;
+  color: black;
+}
+.topbar-wrapper {
+  position: relative !important;
+  box-shadow: none;
+  border-bottom: 1px solid black;
+}
+
+.topbar-toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.topbar-menu-left {
+  display: flex;
+  align-items: center;
+}
