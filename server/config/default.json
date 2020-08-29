@@ -28,5 +28,5 @@
       "passwordField": "password"
     }
   },
-  "postgres": "postgres://postgres:password@postgres:5432/postgres"
+  "postgres": "postgres://postgres:password@localhost:5432/postgres"
 }

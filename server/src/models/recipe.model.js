@@ -5,6 +5,7 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
+  const { user } = sequelizeClient.models;
   const recipe = sequelizeClient.define('recipe', {
     id: {
       type: DataTypes.UUID,
@@ -113,14 +114,14 @@ module.exports = function (app) {
       foreignKey: 'authorId',
       as: 'author' 
     });
-    recipe.hasMany(models.recipe_ingridient , {
-      foreignKey: 'recipeId',
-      as: 'ingridients'
-    });
-    recipe.hasMany(models.recipe_stage , {
-      foreignKey: 'recipeId',
-      as: 'stages'
-    });
+    // recipe.hasMany(models.recipe_ingridient , {
+    //   foreignKey: 'recipeId',
+    //   as: 'ingridients'
+    // });
+    // recipe.hasMany(models.recipe_stage , {
+    //   foreignKey: 'recipeId',
+    //   as: 'stages'
+    // });
   };
 
   return recipe;
