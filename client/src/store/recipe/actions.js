@@ -1,28 +1,28 @@
-const DOCUMENT = 'RECIPE_';
+const DOCUMENT = "RECIPE_";
 
 const actions = {
-  GET: DOCUMENT + 'GET',
-  GET_SUCCESS: DOCUMENT + 'GET_SUCCESS',
-  GET_FAILURE: DOCUMENT + 'GET_FAILURE',
+  GET: DOCUMENT + "GET",
+  GET_SUCCESS: DOCUMENT + "GET_SUCCESS",
+  GET_FAILURE: DOCUMENT + "GET_FAILURE",
 
-  GET_ID: DOCUMENT + 'GET_ID',
-  GET_ID_SUCCESS: DOCUMENT + 'GET_ID_SUCCESS',
-  GET_ID_FAILURE: DOCUMENT + 'GET_ID_FAILURE',
+  GET_ID: DOCUMENT + "GET_ID",
+  GET_ID_SUCCESS: DOCUMENT + "GET_ID_SUCCESS",
+  GET_ID_FAILURE: DOCUMENT + "GET_ID_FAILURE",
 
-  CREATE: DOCUMENT + 'CREATE',
-  CREATE_SUCCESS: DOCUMENT + 'CREATE_SUCCESS',
-  CREATE_FAILURE: DOCUMENT + 'CREATE_FAILURE',
+  CREATE: DOCUMENT + "CREATE",
+  CREATE_SUCCESS: DOCUMENT + "CREATE_SUCCESS",
+  CREATE_FAILURE: DOCUMENT + "CREATE_FAILURE",
 
-  UPDATE: DOCUMENT + 'UPDATE',
-  UPDATE_SUCCESS: DOCUMENT + 'UPDATE_SUCCESS',
-  UPDATE_FAILURE: DOCUMENT + 'UPDATE_FAILURE',
+  UPDATE: DOCUMENT + "UPDATE",
+  UPDATE_SUCCESS: DOCUMENT + "UPDATE_SUCCESS",
+  UPDATE_FAILURE: DOCUMENT + "UPDATE_FAILURE",
 
-  REMOVE: DOCUMENT + 'REMOVE',
-  REMOVE_SUCCESS: DOCUMENT + 'REMOVE_SUCCESS',
-  REMOVE_FAILURE: DOCUMENT + 'REMOVE_FAILURE',
+  REMOVE: DOCUMENT + "REMOVE",
+  REMOVE_SUCCESS: DOCUMENT + "REMOVE_SUCCESS",
+  REMOVE_FAILURE: DOCUMENT + "REMOVE_FAILURE",
 
-  SET_PAGE: DOCUMENT + 'SET_PAGE',
-  SET_FILTERS: DOCUMENT + 'SET_FILTERS',
+  SET_PAGE: DOCUMENT + "SET_PAGE",
+  SET_FILTERS: DOCUMENT + "SET_FILTERS",
 
   get: () => {
     return { type: actions.GET };
@@ -33,9 +33,9 @@ const actions = {
     payload: data,
   }),
 
-  getFailure: error => ({
+  getFailure: (error) => ({
     type: actions.GET_FAILURE,
-    payload: error
+    payload: error,
   }),
 
   getId: () => {
@@ -47,9 +47,9 @@ const actions = {
     payload: data,
   }),
 
-  getIdFailure: error => ({
+  getIdFailure: (error) => ({
     type: actions.GET_ID_FAILURE,
-    payload: error
+    payload: error,
   }),
 
   create: () => {
@@ -61,9 +61,9 @@ const actions = {
     payload: data,
   }),
 
-  createFailure: error => ({
+  createFailure: (error) => ({
     type: actions.CREATE_FAILURE,
-    payload: error
+    payload: error,
   }),
 
   update: () => {
@@ -75,9 +75,9 @@ const actions = {
     payload: data,
   }),
 
-  updateFailure: error => ({
+  updateFailure: (error) => ({
     type: actions.UPDATE_FAILURE,
-    payload: error
+    payload: error,
   }),
 
   remove: () => {
@@ -89,20 +89,20 @@ const actions = {
     payload: data,
   }),
 
-  removeFailure: error => ({
+  removeFailure: (error) => ({
     type: actions.REMOVE_FAILURE,
-    payload: error
+    payload: error,
   }),
 
   setFilters: (filters, page = 1) => ({
     type: actions.SET_FILTERS,
-    payload: { filters, page }
+    payload: { filters, page },
   }),
 
   setPage: (page) => ({
     type: actions.SET_PAGE,
-    payload: page
+    payload: page,
   }),
-
 };
+
 export default actions;

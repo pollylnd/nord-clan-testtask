@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Link } from "react-router-dom";
 
 import TextField from "@material-ui/core/TextField";
@@ -8,18 +9,20 @@ import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import Button from "@material-ui/core/Button";
 
-import './style.css'
+import "./style.css";
 
-const SignUp = () => {
+const SignIn = () => {
   return (
-    <div className="signup-form-wrapper">
-      <Card variant="outlined" className="signup-form-card">
+    <div class="signin-form-wrapper">
+      <Card variant="outlined">
         <CardContent>
-          <Typography>Регистрация</Typography>
-          <div className="signup-form">
-            <TextField required id="standard-required-name" label="Имя" />
-            <TextField required id="standard-required-email" label="Почта" />
-            <TextField required id="standard-required-login" label="Логин" />
+          <Typography>Вход</Typography>
+          <div className="signin-form">
+            <TextField
+              required
+              id="standard-required-email"
+              label="Логин или почта"
+            />
             <TextField
               id="standard-password-input"
               label="Пароль"
@@ -29,16 +32,16 @@ const SignUp = () => {
             />
           </div>
           <CardActions>
-            <Button>Зарегистрироваться</Button>
+            <Button>Войти</Button>
           </CardActions>
           <div>
-            Уже зарегистрированы? &nbsp;
-            <Link to="/sign-in">Войдите</Link>
+            Ещё не с нами? &nbsp;
+            <Link to="/sign-up">Зарегистрируйтесь</Link>
           </div>
         </CardContent>
       </Card>
     </div>
   );
-};
+}
 
-export default SignUp;
+export default SignIn;

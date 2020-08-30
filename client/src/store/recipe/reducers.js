@@ -6,124 +6,121 @@ const initState = {
   filters: {},
   current: {},
   create: {},
-  errorMessage: '',
-}
+  errorMessage: "",
+};
 
-export default function reducer(
-  state = initState,
-  { type, payload }
-) {
+export default function reducer(state = initState, { type, payload }) {
   switch (type) {
-    case actions.GET: 
+    case actions.GET:
       return {
         ...state,
-        errorMessage: '',
+        errorMessage: "",
       };
 
-    case actions.GET_SUCCESS: 
+    case actions.GET_SUCCESS:
       return {
         ...state,
         list: payload.data,
-        errorMessage: '',
+        errorMessage: "",
       };
 
-    case actions.GET_FAILURE: 
+    case actions.GET_FAILURE:
       return {
         ...state,
-        errorMessage: 'Error'
+        errorMessage: "Error",
       };
 
-    case actions.GET_ID: 
+    case actions.GET_ID:
       return {
         ...state,
-        errorMessage: '',
+        errorMessage: "",
       };
 
-    case actions.GET_ID_SUCCESS: 
+    case actions.GET_ID_SUCCESS:
       return {
         ...state,
         current: payload.data,
-        errorMessage: '',
+        errorMessage: "",
       };
 
-    case actions.GET_ID_FAILURE: 
+    case actions.GET_ID_FAILURE:
       return {
         ...state,
-        errorMessage: 'Error'
+        errorMessage: "Error",
       };
 
-    case actions.CREATE: 
+    case actions.CREATE:
       return {
         ...state,
-        errorMessage: '',
+        errorMessage: "",
       };
-    
-    case actions.CREATE_SUCCESS: 
+
+    case actions.CREATE_SUCCESS:
       return {
         ...state,
         create: payload.data,
-        errorMessage: '',
+        errorMessage: "",
       };
-    
-    case actions.CREATE_FAILURE: 
+
+    case actions.CREATE_FAILURE:
       return {
         ...state,
-        errorMessage: 'Error'
+        errorMessage: "Error",
       };
-    
-    case actions.UPDATE: 
+
+    case actions.UPDATE:
       return {
         ...state,
-        errorMessage: '',
+        errorMessage: "",
       };
-    
-    case actions.UPDATE_SUCCESS: 
+
+    case actions.UPDATE_SUCCESS:
       return {
         ...state,
         current: payload.data,
-        errorMessage: '',
-      };
-    
-    case actions.UPDATE_FAILURE: 
-      return {
-        ...state,
-        errorMessage: 'Error'
+        errorMessage: "",
       };
 
-    case actions.REMOVE: 
+    case actions.UPDATE_FAILURE:
       return {
         ...state,
-        errorMessage: '',
+        errorMessage: "Error",
       };
-    
-    case actions.REMOVE_SUCCESS: 
+
+    case actions.REMOVE:
+      return {
+        ...state,
+        errorMessage: "",
+      };
+
+    case actions.REMOVE_SUCCESS:
       return {
         ...state,
         list: {
-          ...state.list
+          ...state.list,
         },
-        errorMessage: '',
+        errorMessage: "",
       };
-    
-    case actions.REMOVE_FAILURE: 
+
+    case actions.REMOVE_FAILURE:
       return {
         ...state,
-        errorMessage: 'Error'
+        errorMessage: "Error",
       };
-    
-    case actions.SET_PAGE: 
+
+    case actions.SET_PAGE:
       return {
         ...state,
         page: payload.page,
-      }
+      };
 
-    case actions.SET_FILTERS: 
+    case actions.SET_FILTERS:
       return {
         ...state,
         page: payload.page,
         filters: payload.filters,
-      }
-    default: 
-      return state
+      };
+    default:
+      return state;
   }
-}
+};

@@ -1,11 +1,8 @@
-import React from 'react'
-import {
-  Switch,
-  Route,
-} from 'react-router-dom'
+import React from "react";
+import { Switch, Route } from "react-router-dom";
 
-import DashBoard from 'components/pages/Dashboard'
-import Recipe from 'components/pages/Recipe'
+import DashBoard from "components/pages/Dashboard";
+import Recipe from "components/pages/Recipe";
 
 export default function LoggedApp() {
   return (
@@ -15,5 +12,5 @@ export default function LoggedApp() {
       <Route path="/sign-in" component={DashBoard} />
       <Route path="/recipe" component={Recipe} />
     </Switch>
-  )
+  );
 }
