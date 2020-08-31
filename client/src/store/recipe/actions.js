@@ -24,6 +24,8 @@ const actions = {
   SET_PAGE: DOCUMENT + "SET_PAGE",
   SET_FILTERS: DOCUMENT + "SET_FILTERS",
 
+  CHANGE_FIELD: DOCUMENT + "CHANGE_FIELD",
+
   get: () => {
     return { type: actions.GET };
   },
@@ -104,6 +106,12 @@ const actions = {
     type: actions.SET_PAGE,
     payload: page,
   }),
+
+  changeField: (type, key, value) => ({
+    type: actions.CHANGE_FIELD,
+    payload: { type, key, value }
+  }),
+
 };
 
 export default actions;

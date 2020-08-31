@@ -35,3 +35,16 @@
 .signup-form-signin {
   margin-top: 25px;
 }
+
+.MuiButton-contained.signup-submit-button {
+  background-color: #16612c;
+  color: white;
+}
+
+.MuiButton-contained:hover.signup-submit-button {
+  background-color: #71605a;
+}
+
+.signup-form-label {
+  color: #16612c;
+}

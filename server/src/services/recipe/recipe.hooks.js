@@ -4,15 +4,20 @@
 module.exports = {
   before: {
     all: [],
-    find: [
-      
-    ],
+    find: [],
     get: [
       async hook => {
         const { app, id } = hook;
         const sequelizeClient = app.get('sequelizeClient');
 
-        const { recipe, recipe_ingredient, recipe_stage, ingredient, user } = sequelizeClient.models;
+        const { 
+          recipe, 
+          recipe_ingredient, 
+          recipe_stage, 
+          ingredient, 
+          user,
+          alternative_recipe_ingredient,
+        } = sequelizeClient.models;
         
         const recipeData = await recipe.findOne({
           include: [
@@ -23,11 +28,25 @@ module.exports = {
               where: {
                 recipeId: id
               },
-              include: [{
-                model: ingredient,
-                as: 'ingredient',
-                required: false,
-              }]
+              include: [
+                {
+                  model: ingredient,
+                  as: 'ingredient',
+                  required: false,
+                },
+                {
+                  model: alternative_recipe_ingredient,
+                  as: 'alternativeIngredient',
+                  required: false,
+                  include: [
+                    {
+                      model: ingredient,
+                      as: 'altIngredient',
+                      required: false,
+                    },
+                  ]
+                }
+              ]
             },
             {
               model: recipe_stage,
@@ -47,6 +66,8 @@ module.exports = {
             },
           ]
         }).then(result => JSON.parse(JSON.stringify(result)));
+
+        console.log(recipeData);
 
         hook.result = recipeData;
         

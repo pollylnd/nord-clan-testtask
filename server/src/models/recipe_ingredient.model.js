@@ -99,7 +99,10 @@ module.exports = function (app) {
       foreignKey: 'ingredientId',
       as: 'ingredient'
     });
-    // alternative_recipe_ingredient
+    recipe_ingredient.hasMany(models.alternative_recipe_ingredient, {
+      foreignKey: 'recipeIngredientId',
+      as: 'alternativeIngredient',
+    });
   };
 
   return recipe_ingredient;

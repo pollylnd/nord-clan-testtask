@@ -20,7 +20,6 @@ function* get() {
 function* getId(action) {
   try {
     const id = action.payload
-    console.log(action)
     const recipe = yield backend.service("recipe").get(id)
     if(_.size(recipe)) {
       yield put(actions.getIdSuccess(recipe))

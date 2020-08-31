@@ -5,7 +5,12 @@ const initState = {
   page: 1,
   filters: {},
   current: {},
-  create: {},
+  create: {
+    name: "",
+    description: "",
+    complexity: null,
+    category: null,
+  },
   errorMessage: "",
 };
 
@@ -34,7 +39,7 @@ export default function reducer(state = initState, { type, payload }) {
       return {
         ...state,
         current: {
-          ...initState.current
+          ...initState.current,
         },
         errorMessage: "",
       };
@@ -123,7 +128,20 @@ export default function reducer(state = initState, { type, payload }) {
         page: payload.page,
         filters: payload.filters,
       };
+
+    case actions.CHANGE_FIELD:
+      const type = payload.type;
+      const key = payload.key;
+      const value = payload.value;
+      return {
+        ...state,
+        [type]: {
+          ...state[type],
+          [key]: value,
+        },
+      };
+
     default:
       return state;
   }
-};
+}

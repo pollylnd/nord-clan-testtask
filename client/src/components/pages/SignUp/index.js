@@ -50,7 +50,7 @@ const SignUp = () => {
   return (
     <div className="signup-form-wrapper">
       <Card variant="outlined" className="signup-form-card">
-        <CardContent>
+        <CardContent className="signup-form-card-content">
           <Typography align="center" variant="h6">
             Регистрация
           </Typography>
@@ -61,6 +61,7 @@ const SignUp = () => {
                 id="standard-required-input"
                 label="Имя"
                 name="userName"
+                variant="outlined"
                 value={_.get(user, 'userName')}
                 onChange={(e) => handleChange(e)}
               />
@@ -72,6 +73,7 @@ const SignUp = () => {
                 label="Почта"
                 name="email"
                 type="email"
+                variant="outlined"
                 value={_.get(user, 'email')}
                 onChange={(e) => handleChange(e)}
               />
@@ -82,6 +84,7 @@ const SignUp = () => {
                 id="standard-password-input"
                 label="Пароль"
                 type="password"
+                variant="outlined"
                 autoComplete="current-password"
                 name="password"
                 value={_.get(user, 'password')}
@@ -92,7 +95,7 @@ const SignUp = () => {
           <CardActions className="signup-form-submit">
             <Button
               fullWidth
-              color="primary"
+              className="signup-submit-button"
               variant="contained"
               onClick={() => handleSignUp()}
             >
@@ -101,7 +104,7 @@ const SignUp = () => {
           </CardActions>
           <div className="signup-form-signin">
             Уже зарегистрированы? &nbsp;
-            <Link to="/sign-in">Войдите</Link>
+            <Link className="signup-form-label" to="/sign-in">Войдите</Link>
           </div>
         </CardContent>
       </Card>

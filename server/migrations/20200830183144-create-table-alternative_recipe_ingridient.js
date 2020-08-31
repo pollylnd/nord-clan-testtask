@@ -14,6 +14,11 @@ module.exports = {
         allowNull: false,
         foreignKey: true,
       },
+      ingredientId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        foreignKey: true,
+      },
       ingredientAmount: {
         type: Sequelize.FLOAT,
         allowNull: false,
@@ -27,6 +32,13 @@ module.exports = {
         allowNull: true,
         defaultValue: false
       },
+      createdAt: {
+        type: Sequelize.DATE
+      },
+  
+      updatedAt: {
+        type: Sequelize.DATE
+      }
     });
   },
 

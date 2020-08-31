@@ -7,7 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 
-import { ReactComponent as MenuIcon } from "assets/icons/logo.svg";
+import LogoIcon  from "assets/logo.png";
 
 import "./style.css";
 
@@ -17,17 +17,7 @@ const TopBar = () => {
       <AppBar className="topbar-wrapper">
         <Toolbar className="topbar-toolbar">
           <Link to="/dashboard" className="topbar-menu-left">
-            <IconButton
-              edge="start"
-              className="topbar-menu-button"
-              color="inherit"
-              aria-label="menu"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" className="topbar-title">
-              PASTA LA VISTA
-            </Typography>
+            <img src={LogoIcon} />
           </Link>
           <Link to="/sign-in" className="topbar-menu-right">
             <Button>Вход</Button>

@@ -1,11 +1,7 @@
 module.exports = {
   before: {
     all: [],
-    find: [
-      async hook => {
-        return hook;
-      }
-    ],
+    find: [],
     get: [],
     create: [],
     update: [],

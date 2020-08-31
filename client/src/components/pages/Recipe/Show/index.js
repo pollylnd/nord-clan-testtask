@@ -6,13 +6,17 @@ import _ from "lodash";
 
 import recipeActions from "store/recipe/actions";
 
-import { recipeComplexity, recipeCategory } from 'helpers/params'
+import { recipeComplexity, recipeCategory, ingredientUnit } from 'helpers/params'
 
 import Divider from "@material-ui/core/Divider";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 import { ReactComponent as EmptyImg } from "assets/icons/empty-recipe-img.svg";
 
@@ -34,6 +38,53 @@ const Show = (props) => {
   const createdAt = !_.isEmpty(recipe) && moment(recipe.createdAt).format("DD MMMM YYYY")
   const complexity = !_.isEmpty(recipe) && recipeComplexity[recipe.complexity].name
   const category = !_.isEmpty(recipe) && recipeCategory[recipe.category].name
+
+  const ingredientTable = () => {
+    
+    const mainIngredients = _.map(recipe.ingredients, item => {
+      // console.log(item)
+      const unit = !_.isEmpty(recipe) && ingredientUnit[item.unit].name
+      return item.ingredient.ingredientName + ' - ' + item.ingredientAmount + unit
+    })
+
+    const alternativeIngredients = _.map(recipe.ingredients, item => {
+      console.log(item)
+      return _.map(item.alternativeIngredient, altItem => {
+        console.log(altItem)
+        const unit = !_.isEmpty(recipe) && ingredientUnit[altItem.unit].name
+        return altItem.altIngredient.ingredientName + ' - ' + altItem.ingredientAmount + unit
+      })
+    })
+
+    function createData(mainIngredients, alternativeIngredients) {
+      return { mainIngredients, alternativeIngredients };
+    }
+
+    const rows = [
+      createData(mainIngredients, alternativeIngredients),
+    ];
+  
+    return (
+      <TableContainer component={Paper}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Ингредиенты</TableCell>
+              <TableCell align="right">Альтернативные ингредиенты</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={row.name}>
+                <TableCell component="th" scope="row">{row.mainIngredients}</TableCell>
+                <TableCell align="right">{row.alternativeIngredients}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    )
+  }
   
   return (
     <div className="recipe-container">
@@ -77,69 +128,53 @@ const Show = (props) => {
         </div>
       </div>
       <Divider />
-      <div className="recipe-ingredients">
+      {/* <div className="recipe-ingredients">
         <div className="recipe-ingredients-main">
           <div className="recipe-item-title">Ингредиенты</div>
           <List component="nav" aria-label="secondary mailbox folders">
             <ListItem className="recipe-ingredients-list">
-              <ListItemText primary="- огурцы – 1,5 кг" />
-              <ListItemText primary="- чеснок – 5–6 зубчиков" />
-              <ListItemText primary="- листья хрена – 1–2 шт" />
-              <ListItemText primary="- листья вишни – 3 шт." />
-              <ListItemText primary="- листья смородины – 5–6 шт." />
-              <ListItemText primary="- укроп – 3 веточки" />
-              <ListItemText primary="- питьевая вода – 2 л" />
-              <ListItemText primary="- соль – 4 ст. л." />
-              <ListItemText primary="- душистый перец – 8–10 шт." />
-              <ListItemText primary="- гвоздика – 3–4 бутона" />
-              <ListItemText primary="- лавровый лист – 3–4 шт." />
+              {
+                _.map(recipe.ingredients, item => {
+                  console.log(recipe)
+                  const unit = !_.isEmpty(recipe) && ingredientUnit[item.unit].name
+                  return (
+                    <ListItemText primary={`- ${item.ingredient.ingredientName} - ${item.ingredientAmount} ${unit} `} />
+                  )
+                })
+              }
             </ListItem>
           </List>
         </div>
         <div className="recipe-ingredients-alt">
           <div className="recipe-item-title">Альтернативные ингредиенты</div>
           <List component="nav" aria-label="secondary mailbox folders">
-            <ListItem className="recipe-ingredients-list">
-              <ListItemText primary="  " />
-              <ListItemText primary="  " />
-              <ListItemText primary="- петрушка - 3 веточки" />
-              <ListItemText primary="  " />
-              <ListItemText primary="- листья яблони – 5–6 шт." />
-              <ListItemText primary="  " />
-              <ListItemText primary="  " />
-              <ListItemText primary="   " />
-              <ListItemText primary="  " />
-              <ListItemText primary="  " />
-              <ListItemText primary="  " />
-            </ListItem>
+            {
+              _.map(recipe.ingredients, item => {
+                const unit = !_.isEmpty(recipe) && ingredientUnit[item.unit].name
+                return (
+                  <ListItemText primary={`- ${item.ingredient.ingredientName} - ${item.ingredientAmount} ${unit} `} />
+                )
+              })
+            }
           </List>
         </div>
+      </div> */}
+      <div className="recipe-ingredients">
+        {ingredientTable()}
       </div>
       <Divider />
       <div className="recipe-steps">
         <div className="recipe-item-title">ПОШАГОВЫЙ РЕЦЕПТ ПРИГОТОВЛЕНИЯ</div>
-        <div className="recipe-steps-item">
-          <div className="recipe-steps-item-index">Шаг 1</div>
-          <div className="recipe-steps-item-desc">
-            Подготовьте все ингредиенты для приготовления хрустящих малосольных
-            огурцов. Прежде всего, отберите огурцы. Они должны быть некрупными,
-            не больше 6–7 см в длину. Вымойте их обсушите бумажными полотенцами
-            и срежьте кончики. Зубчики чеснока очистите. Можно крупно их
-            нарезать. Листья хрена, вишни и смородины, а также укроп вымойте и
-            хорошо обсушите на бумажных полотенцах.
-          </div>
-        </div>
-        <div className="recipe-steps-item">
-          <div className="recipe-steps-item-index">Шаг 2</div>
-          <div className="recipe-steps-item-desc">
-            Подготовьте все ингредиенты для приготовления хрустящих малосольных
-            огурцов. Прежде всего, отберите огурцы. Они должны быть некрупными,
-            не больше 6–7 см в длину. Вымойте их обсушите бумажными полотенцами
-            и срежьте кончики. Зубчики чеснока очистите. Можно крупно их
-            нарезать. Листья хрена, вишни и смородины, а также укроп вымойте и
-            хорошо обсушите на бумажных полотенцах.
-          </div>
-        </div>
+          {
+            _.map(recipe.stages, stage => {
+              return (
+                <div className="recipe-steps-item">
+                  <div className="recipe-steps-item-index">Шаг {stage.index + 1}</div>
+                  <div className="recipe-steps-item-desc">{stage.descriprion}</div>
+                </div>
+              )
+            })
+          }
       </div>
     </div>
   );

@@ -50,8 +50,10 @@ const SignIn = () => {
               <TextField
                 required
                 id="standard-required-email"
+                variant="outlined"
                 label="Почта"
                 value={_.get(user, 'email')}
+                className="signin-form-label"
               />
             </FormControl>
             <FormControl fullWidth margin="dense">
@@ -60,15 +62,17 @@ const SignIn = () => {
                 label="Пароль"
                 type="password"
                 autoComplete="current-password"
+                variant="outlined"
                 required
                 value={_.get(user, 'password')}
+                className="signin-form-label"
               />
             </FormControl>
           </div>
           <CardActions className="signin-form-submit">
             <Button 
               fullWidth
-              color="primary"
+              className="signin-submit-button"
               variant="contained"
             >
               Войти
@@ -76,7 +80,7 @@ const SignIn = () => {
           </CardActions>
           <div className="signin-form-signup">
             Ещё не с нами? &nbsp;
-            <Link to="/sign-up">Зарегистрируйтесь</Link>
+            <Link className="signin-form-label" to="/sign-up">Зарегистрируйтесь</Link>
           </div>
         </CardContent>
       </Card>

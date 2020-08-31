@@ -26,6 +26,10 @@
   justify-content: center;
 }
 
+.MuiPaper-outlined.signin-form-card {
+  border-radius: 4px;
+}
+
 .MuiCardContent-root.signin-form-card-content {
   display: flex;
   flex-direction: column;
@@ -36,4 +40,25 @@
 
 .signin-form-signup {
   margin-top: 25px;
+}
+
+.MuiButton-contained.signin-submit-button {
+  background-color: #16612c;
+  color: white;
+}
+
+.MuiButton-contained:hover.signin-submit-button {
+  background-color: #71605a;
+}
+
+.signin-form-label {
+  color: #16612c;
+}
+
+.MuiFormLabel-root.Mui-focused {
+  color: #16612c !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #16612c !important;
 }

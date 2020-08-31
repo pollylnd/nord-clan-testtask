@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import Dropzone from "react-dropzone";
+import { useDispatch, useSelector } from "react-redux";
+import _ from "lodash";
+
+import recipeActions from "store/recipe/actions";
+
+import { recipeComplexity, recipeCategory, ingredientUnit } from 'helpers/params'
 
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -15,21 +21,24 @@ import CardContent from "@material-ui/core/CardContent";
 import "./style.css";
 
 const Create = () => {
-  const [diff, setDiff] = useState("");
+  const dispatch = useDispatch();
+  const [complexity, setDiff] = useState("");
   const [category, setCategory] = useState("");
   const [unit, setUnit] = useState("");
-
-  const handleChangeDiff = (event) => {
-    setDiff(event.target.value);
-  };
-
-  const handleChangeCategory = (event) => {
-    setCategory(event.target.value);
-  };
+  const [stage, setStage] = useState(0);
 
   const handleChangeUnit = (event) => {
     setUnit(event.target.value);
   };
+
+  const recipe = useSelector(state => _.get(state.recipe, 'create'));
+
+  const handleChange = (e) => {
+    const value = _.get(e.target, 'value')
+    const key = _.get(e.target, 'name')
+    
+    dispatch(recipeActions.changeField('create', key, value))
+  }
 
   return (
     <>
@@ -41,11 +50,12 @@ const Create = () => {
               <TextField
                 id="outlined-name"
                 label="Название"
-                // value={name}
-                // onChange={handleChange}
+                name="name"
+                value={_.get(recipe, 'name')}
                 variant="outlined"
                 required
                 placeholder="Введите название рецепта"
+                onChange={(e) => handleChange(e)}
               />
             </FormControl>
 
@@ -64,9 +74,12 @@ const Create = () => {
                 id="outlined-multiline-static"
                 label="Описание"
                 multiline
+                name="description"
+                value={_.get(recipe, 'description')}
                 rows={4}
                 placeholder="Добавьте описание рецепта"
                 variant="outlined"
+                onChange={(e) => handleChange(e)}
               />
             </FormControl>
 
@@ -76,14 +89,15 @@ const Create = () => {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={diff}
-                  onChange={handleChangeDiff}
+                  name="complexity"
+                  value={recipeComplexity[complexity]}
+                  onChange={(e) => handleChange(e)}
                 >
-                  <MenuItem value={1}>Очень простой</MenuItem>
-                  <MenuItem value={2}>Простой</MenuItem>
-                  <MenuItem value={3}>Средний</MenuItem>
-                  <MenuItem value={4}>Сложный</MenuItem>
-                  <MenuItem value={5}>Очень сложный</MenuItem>
+                  {
+                    _.map(recipeComplexity, item => {
+                      return <MenuItem value={item.value}>{item.name}</MenuItem>
+                    })
+                  }
                 </Select>
               </FormControl>
               <FormControl required>
@@ -91,19 +105,15 @@ const Create = () => {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={category}
-                  onChange={handleChangeCategory}
+                  name="category"
+                  value={recipeCategory[category]}
+                  onChange={(e) => handleChange(e)}
                 >
-                  <MenuItem value={1}>Салаты</MenuItem>
-                  <MenuItem value={2}>Супы</MenuItem>
-                  <MenuItem value={3}>Закуски</MenuItem>
-                  <MenuItem value={4}>Вторые блюда</MenuItem>
-                  <MenuItem value={5}>Десерты</MenuItem>
-                  <MenuItem value={6}>Выпечка</MenuItem>
-                  <MenuItem value={7}>Заготовки</MenuItem>
-                  <MenuItem value={8}>Соусы</MenuItem>
-                  <MenuItem value={9}>Напитки</MenuItem>
-                  <MenuItem value={10}>Украшения блюда</MenuItem>
+                  {
+                    _.map(recipeCategory, item => {
+                      return <MenuItem value={item.value}>{item.name}</MenuItem>
+                    })
+                  }
                 </Select>
               </FormControl>
             </div>
@@ -121,6 +131,7 @@ const Create = () => {
                       variant="outlined"
                       required
                       placeholder="Описание"
+                      onChange={(e) => handleChange(e)}
                     />
                   </FormControl>
                 </CardContent>
@@ -142,16 +153,17 @@ const Create = () => {
                   variant="outlined"
                   required
                   placeholder="Название"
+                  onChange={(e) => handleChange(e)}
                 />
                 <TextField
                   id="outlined-name"
                   label=""
                   // value={name}
-                  // onChange={handleChange}
                   variant="outlined"
                   required
                   placeholder="Кол-во"
                   type="number"
+                  onChange={(e) => handleChange(e)}
                 />
                 <FormControl required>
                   <Select

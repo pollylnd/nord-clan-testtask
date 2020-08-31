@@ -18,7 +18,7 @@ export default function LoggedApp() {
       <Route path="/sign-up" component={SignUp} />
       <Route path="/recipe/:id" component={RecipeShow} />
       <Route path="/recipe/:id/edit" component={RecipeEdit} />
-      <Route path="/recipe/create" component={RecipeCreate} />
+      <Route path="/create-recipe" component={RecipeCreate} />
     </Switch>
   );
 }
