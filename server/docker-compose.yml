@@ -1,27 +1,6 @@
 version: '2'
 
 services:
-
-  # node:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./docker/node/Dockerfile
-  #   restart: unless-stopped
-  #   container_name: server-node
-  #   links:
-  #     - postgres
-  #   depends_on:
-  #     - postgres
-  #   ports:
-  #     - 3030:3030
-  #   volumes:
-  #     - ./src:/app/src
-  #     - ./migrations:/app/migrations
-  #     - ./package.json:/app/package.json
-  #     - ./package-lock.json:/app/package-lock.json
-  #   networks:
-  #     - proxy-tier
-
   postgres:
     build: ./docker/postgres
     container_name: server-db
@@ -29,15 +8,25 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_DB: 'postgres'
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "postgres"
     volumes:
       - ./db:/var/lib/postgresql/data
-    networks:
-      - proxy-tier
-
-networks:
-  proxy-tier:
-    external:
-      name: server_default
+  node:
+    build:
+      context: ./
+      dockerfile: ./docker/node/Dockerfile
+    restart: unless-stopped
+    container_name: server-node
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    ports:
+      - 3030:3030
+    volumes:
+      - ./src:/app/src
+      - ./migrations:/app/migrations
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json

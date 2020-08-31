@@ -6,40 +6,40 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const { recipe } = sequelizeClient.models;
-  const alternative_recipe_ingridient = sequelizeClient.define('alternative_recipe_ingridient', {
+  const alternative_recipe_ingredient = sequelizeClient.define('alternative_recipe_ingredient', {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
       allowNull: false,
     },
-    recipeIngridientId: {
+    recipeIngredientId: {
       type: DataTypes.UUID,
       allowNull: false,
       foreignKey: true,
       validate: {
         isUUID: {
           args: 4,
-          msg: 'recipeIngridientIdUUIDMust4'
+          msg: 'recipeIngredientIdUUIDMust4'
         },
         notEmpty: {
-          msg: 'recipeIngridientIdNotNull'
+          msg: 'recipeIngredientIdNotNull'
         },
         isExist: async id => {
           await recipe.find({ where: { id } })
             .then(res => {
               if (!res) {
-                throw new Error('recipeIngridientIdNotFound');
+                throw new Error('recipeIngredientIdNotFound');
               } else {
                 if (res.dataValues && res.dataValues.isDeleted) {
-                  throw new Error('recipeIngridientIdIsDeleted');
+                  throw new Error('recipeIngredientIdIsDeleted');
                 }
               }
             });
         }
       }
     },
-    ingridientAmount: {
+    ingredientAmount: {
       type: DataTypes.FLOAT,
       allowNull: false,
     },
@@ -62,14 +62,14 @@ module.exports = function (app) {
   });
 
   // eslint-disable-next-line no-unused-vars
-  alternative_recipe_ingridient.associate = function (models) {
+  alternative_recipe_ingredient.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
-    // alternative_recipe_ingridient.belongsTo(models.recipe_ingridient, {
-    //   foreignKey: 'recipeIngridientId',
-    //   as: 'recipeIngridientInfo'
+    // alternative_recipe_ingredient.belongsTo(models.recipe_ingredient, {
+    //   foreignKey: 'recipeIngredientId',
+    //   as: 'recipeIngredientInfo'
     // });
   };
 
-  return alternative_recipe_ingridient;
+  return alternative_recipe_ingredient;
 };

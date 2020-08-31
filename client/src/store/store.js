@@ -4,8 +4,10 @@ import { routerMiddleware } from 'react-router-redux'
 import createSagaMiddleware from 'redux-saga'
 
 import recipeSaga from  './recipe/saga'
+import userSaga from  './user/saga'
 
 import recipeReducers   from './recipe/reducers'
+import userReducers   from './user/reducers'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -20,6 +22,7 @@ const middleware = [
 
 const appReducer = combineReducers({
   recipe:   recipeReducers,
+  user:     userReducers,
 })
 
 const store = applyMiddleware(...middleware)(createStore)(
@@ -28,6 +31,7 @@ const store = applyMiddleware(...middleware)(createStore)(
 )
 
 sagaMiddleware.run(recipeSaga.recipeSaga)
+sagaMiddleware.run(userSaga.userSaga)
 
 export {
   store,

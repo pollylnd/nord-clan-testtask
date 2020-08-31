@@ -110,18 +110,21 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   recipe.associate = function (models) {
+    // recipe.belongsToMany(models.ingredient, {
+    //   through: models.recipe_ingredient
+    // });
     recipe.belongsTo(models.user, {
       foreignKey: 'authorId',
       as: 'author' 
     });
-    // recipe.hasMany(models.recipe_ingridient , {
-    //   foreignKey: 'recipeId',
-    //   as: 'ingridients'
-    // });
-    // recipe.hasMany(models.recipe_stage , {
-    //   foreignKey: 'recipeId',
-    //   as: 'stages'
-    // });
+    recipe.hasMany(models.recipe_ingredient , {
+      foreignKey: 'recipeId',
+      as: 'ingredients'
+    });
+    recipe.hasMany(models.recipe_stage , {
+      foreignKey: 'recipeId',
+      as: 'stages'
+    });
   };
 
   return recipe;

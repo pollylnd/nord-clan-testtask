@@ -5,6 +5,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
 
 import { ReactComponent as MenuIcon } from "assets/icons/logo.svg";
 
@@ -29,7 +30,7 @@ const TopBar = () => {
             </Typography>
           </Link>
           <Link to="/sign-in" className="topbar-menu-right">
-            Login
+            <Button>Вход</Button>
           </Link>
         </Toolbar>
       </AppBar>

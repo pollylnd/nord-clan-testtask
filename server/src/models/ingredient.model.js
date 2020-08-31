@@ -28,6 +28,7 @@ module.exports = function (app) {
   ingredient.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
+    
   };
 
   return ingredient;

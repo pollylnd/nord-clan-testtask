@@ -1,8 +1,13 @@
 FROM node:carbon
 
-# RUN npm i -g node-gyp sequelize-cli nodemon --unsafe
+WORKDIR /app
+
+RUN npm i -g sequelize-cli
 
 COPY package*.json ./
+
 RUN npm install
 
-# RUN npm run dev
+COPY . .
+
+CMD ["npm", "run", "dev"]

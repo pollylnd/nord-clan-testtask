@@ -33,13 +33,16 @@ export default function reducer(state = initState, { type, payload }) {
     case actions.GET_ID:
       return {
         ...state,
+        current: {
+          ...initState.current
+        },
         errorMessage: "",
       };
 
     case actions.GET_ID_SUCCESS:
       return {
         ...state,
-        current: payload.data,
+        current: payload,
         errorMessage: "",
       };
 

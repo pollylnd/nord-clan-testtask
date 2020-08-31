@@ -73,12 +73,6 @@ module.exports = function (app) {
       defaultValue: false
     },
 
-    image: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      defaultValue: null
-    },
-
   }, {
     hooks: {
       beforeCount(options) {
@@ -91,6 +85,10 @@ module.exports = function (app) {
   user.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
+    user.hasMany(models.recipe, {
+      foreignKey: 'authorId',
+      as: 'author' 
+    });
   };
 
   return user;

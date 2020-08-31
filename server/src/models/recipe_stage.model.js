@@ -5,6 +5,7 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
+  const { recipe } = sequelizeClient.models;
   const recipe_stage = sequelizeClient.define('recipe_stage', {
     id: {
       type: DataTypes.UUID,
@@ -56,6 +57,12 @@ module.exports = function (app) {
       allowNull: true,
       defaultValue: false
     },
+    createdAt: {
+      type: DataTypes.DATE
+    },
+    updatedAt: {
+      type: DataTypes.DATE
+    }
   }, {
     hooks: {
       beforeCount(options) {
@@ -69,7 +76,7 @@ module.exports = function (app) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
     recipe_stage.belongsTo(models.recipe, {
-      foreignKey: 'recipeId',
+      foreignKey: 'id',
       as: 'recipe'
     });
   };

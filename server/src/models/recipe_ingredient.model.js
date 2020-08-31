@@ -5,8 +5,8 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const { ingridient, recipe } = sequelizeClient.models;
-  const recipe_ingridient = sequelizeClient.define('recipe_ingridient', {
+  const { ingredient, recipe } = sequelizeClient.models;
+  const recipe_ingredient = sequelizeClient.define('recipe_ingredient', {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
@@ -39,33 +39,33 @@ module.exports = function (app) {
         }
       }
     },
-    ingridientId: {
+    ingredientId: {
       type: DataTypes.UUID,
       allowNull: false,
       foreignKey: true,
       validate: {
         isUUID: {
           args: 4,
-          msg: 'ingridientIdUUIDMust4'
+          msg: 'ingredientIdUUIDMust4'
         },
         notEmpty: {
-          msg: 'ingridientIdNotNull'
+          msg: 'ingredientIdNotNull'
         },
         isExist: async id => {
-          await ingridient.find({ where: { id } })
+          await ingredient.find({ where: { id } })
             .then(res => {
               if (!res) {
-                throw new Error('ingridientIdNotFound');
+                throw new Error('ingredientIdNotFound');
               } else {
                 if (res.dataValues && res.dataValues.isDeleted) {
-                  throw new Error('ingridientIdIsDeleted');
+                  throw new Error('ingredientIdIsDeleted');
                 }
               }
             });
         }
       }
     },
-    ingridientAmount: {
+    ingredientAmount: {
       type: DataTypes.FLOAT,
       allowNull: false,
     },
@@ -88,19 +88,19 @@ module.exports = function (app) {
   });
 
   // eslint-disable-next-line no-unused-vars
-  recipe_ingridient.associate = function (models) {
+  recipe_ingredient.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
-    recipe_ingridient.belongsTo(models.recipe, {
-      foreignKey: 'recipeId',
+    recipe_ingredient.belongsTo(models.recipe, {
+      foreignKey: 'id',
       as: 'recipe'
     });
-    recipe_ingridient.belongsTo(models.ingridient, {
-      foreignKey: 'ingridientId',
-      as: 'ingridient'
+    recipe_ingredient.belongsTo(models.ingredient, {
+      foreignKey: 'ingredientId',
+      as: 'ingredient'
     });
-    // alternative_recipe_ingridient
+    // alternative_recipe_ingredient
   };
 
-  return recipe_ingridient;
+  return recipe_ingredient;
 };

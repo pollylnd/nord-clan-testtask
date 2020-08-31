@@ -1,11 +1,11 @@
 import { takeEvery, put, all, select } from "redux-saga/effects";
 import backend from "helpers/api/feathers";
+import _ from "lodash";
 
 import actions from "./actions";
 
-const getPage = (state) => state.recipe.page;
 
-function* get({ payload }) {
+function* get() {
   try {
     const recipeList = yield backend.service("recipe").find({
       query: {},
@@ -17,9 +17,24 @@ function* get({ payload }) {
   }
 }
 
+function* getId(action) {
+  try {
+    const id = action.payload
+    console.log(action)
+    const recipe = yield backend.service("recipe").get(id)
+    if(_.size(recipe)) {
+      yield put(actions.getIdSuccess(recipe))
+    }
+  } catch (e) {
+    yield put(actions.getIdFailure(e))
+  }
+
+}
+
 function* recipeSaga() {
   yield all([
-    takeEvery(actions.GET, get)
+    takeEvery(actions.GET, get),
+    takeEvery(actions.GET_ID, getId)
   ]);
 }
 

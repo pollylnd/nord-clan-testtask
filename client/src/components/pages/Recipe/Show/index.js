@@ -1,4 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import moment from 'moment';
+import 'moment/locale/ru';
+import _ from "lodash";
+
+import recipeActions from "store/recipe/actions";
+
+import { recipeComplexity, recipeCategory } from 'helpers/params'
 
 import Divider from "@material-ui/core/Divider";
 import FavoriteIcon from "@material-ui/icons/Favorite";
@@ -6,69 +14,74 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 
-import image from "./b432a7d2.jpg";
+import { ReactComponent as EmptyImg } from "assets/icons/empty-recipe-img.svg";
 
 import "./style.css";
 
-const Show = () => {
+moment.locale('ru');
+
+const Show = (props) => {
+  const dispatch = useDispatch();
+
+  const currentId = props.match.params.id
+
+  useEffect(() => {
+    dispatch(recipeActions.getId(currentId));
+  }, [dispatch]);
+
+  const recipe = useSelector(state => _.get(state.recipe, 'current'))
+  
+  const createdAt = !_.isEmpty(recipe) && moment(recipe.createdAt).format("DD MMMM YYYY")
+  const complexity = !_.isEmpty(recipe) && recipeComplexity[recipe.complexity].name
+  const category = !_.isEmpty(recipe) && recipeCategory[recipe.category].name
+  
   return (
     <div className="recipe-container">
       <div className="recipe-header">
-        <div className="recipe-name">Малосольные огурчики</div>
+        <div className="recipe-name">{recipe.name}</div>
         <div className="recipe-info">
-          <div className="recipe-category">Закуски</div>
+          <div className="recipe-category">{category}</div>
           <Divider />
-          <div className="recipe-date">5 июня 2020</div>
+          <div className="recipe-date">{createdAt}</div>
         </div>
       </div>
       <Divider />
       <div className="recipe-description">
         <div className="recipe-image">
-          <img src={image} alt="image" />
+          {!_.isNil(recipe.image) ? (
+            <img
+              className="recipe-item-image"
+              src={recipe.image}
+              alt=""
+            />
+          ) : (
+            <EmptyImg />
+          )}
         </div>
         <div className="recipe-description-info ">
-          <div className="recipe-description-text col-md-8">
-            Приготовить хрустящие малосольные огурцы — не так просто, как
-            кажется на первый взгляд. Многие пробуют делать это, причем не один
-            раз, но в результате все получается как-то не так. Почему? Причин
-            несколько. Иногда всему виной могут быть сами огурцы. Дело в том,
-            что засаливать лучше всего очень свежие плоды, в идеале — только что
-            собранные с грядки. Именно они имеют упругую кожицу и идеальную
-            хрустящую мякоть, которые при засаливании не утратят этих свойств.
-            Причиной неудовлетворительного результата, конечно же, может стать
-            нарушение технологии засаливания и, наконец, неудачный рецепт. Наш
-            же — проверенный и надежный! Попробуйте приготовить малосольные
-            огурцы по этому рецепту, чтобы затем сполна насладиться их хрустящей
-            текстурой и безупречным вкусом.
-          </div>
+          <div className="recipe-description-text col-md-8">{recipe.description}</div>
           <div className="recipe-description-main">
             <div className="recipe-description-item">
               <div className="recipe-description-item-name">
                 Сложность приготовления:
               </div>
-              <div className="recipe-description-item-desc">Легко</div>
-            </div>
-            <div className="recipe-description-item">
-              <div className="recipe-description-item-name">
-                Количество порций:
-              </div>
-              <div className="recipe-description-item-desc">4</div>
+              <div className="recipe-description-item-desc">{complexity}</div>
             </div>
             <div className="recipe-description-item">
               <div className="recipe-description-item-name">
                 <FavoriteIcon />
-                16
+                {recipe.likes}
               </div>
             </div>
           </div>
         </div>
       </div>
       <Divider />
-      <div className="recipe-ingridients">
-        <div className="recipe-ingridients-main">
+      <div className="recipe-ingredients">
+        <div className="recipe-ingredients-main">
           <div className="recipe-item-title">Ингредиенты</div>
           <List component="nav" aria-label="secondary mailbox folders">
-            <ListItem className="recipe-ingridients-list">
+            <ListItem className="recipe-ingredients-list">
               <ListItemText primary="- огурцы – 1,5 кг" />
               <ListItemText primary="- чеснок – 5–6 зубчиков" />
               <ListItemText primary="- листья хрена – 1–2 шт" />
@@ -83,10 +96,10 @@ const Show = () => {
             </ListItem>
           </List>
         </div>
-        <div className="recipe-ingridients-alt">
+        <div className="recipe-ingredients-alt">
           <div className="recipe-item-title">Альтернативные ингредиенты</div>
           <List component="nav" aria-label="secondary mailbox folders">
-            <ListItem className="recipe-ingridients-list">
+            <ListItem className="recipe-ingredients-list">
               <ListItemText primary="  " />
               <ListItemText primary="  " />
               <ListItemText primary="- петрушка - 3 веточки" />

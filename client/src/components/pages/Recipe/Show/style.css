@@ -92,13 +92,13 @@
   margin-left: 10px;
 }
 
-.recipe-ingridients-list {
+.recipe-ingredients-list {
   flex-direction: column;
   align-items: flex-start !important;
   text-align: start !important;
 }
 
-.recipe-ingridients {
+.recipe-ingredients {
   display: flex;
   justify-content: space-between;
 }

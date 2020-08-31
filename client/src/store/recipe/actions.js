@@ -38,9 +38,10 @@ const actions = {
     payload: error,
   }),
 
-  getId: () => {
-    return { type: actions.GET_ID };
-  },
+  getId: (id) => ({
+    type: actions.GET_ID,
+    payload: id,
+  }),
 
   getIdSuccess: (data) => ({
     type: actions.GET_ID_SUCCESS,
