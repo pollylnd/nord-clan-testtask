@@ -31,7 +31,15 @@ const SignIn = () => {
     return _.isEmpty(emptyFields);
   };
 
-  const handleSignUp = () => {
+  const handleChange = (e) => {
+    const value = _.get(e.target, 'value')
+    const key = _.get(e.target, 'name')
+    console.log(value, key)
+    
+    dispatch(userActions.changeField('signIn', key, value))
+  }
+
+  const handleSignIn = () => {
     if (!isEmptyFields(user)) {
       return false;
     }
@@ -52,20 +60,24 @@ const SignIn = () => {
                 id="standard-required-email"
                 variant="outlined"
                 label="Почта"
+                name="email"
                 value={_.get(user, 'email')}
                 className="signin-form-label"
+                onChange={(e) => handleChange(e)}
               />
             </FormControl>
             <FormControl fullWidth margin="dense">
               <TextField
                 id="standard-password-input"
                 label="Пароль"
+                name="password"
                 type="password"
                 autoComplete="current-password"
                 variant="outlined"
                 required
                 value={_.get(user, 'password')}
                 className="signin-form-label"
+                onChange={(e) => handleChange(e)}
               />
             </FormControl>
           </div>
@@ -74,6 +86,7 @@ const SignIn = () => {
               fullWidth
               className="signin-submit-button"
               variant="contained"
+              onClick={() => handleSignIn()}
             >
               Войти
             </Button>

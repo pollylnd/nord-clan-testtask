@@ -1,69 +1,80 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import moment from 'moment';
-import 'moment/locale/ru';
+import moment from "moment";
+import "moment/locale/ru";
 import _ from "lodash";
 
 import recipeActions from "store/recipe/actions";
 
-import { recipeComplexity, recipeCategory, ingredientUnit } from 'helpers/params'
+import {
+  recipeComplexity,
+  recipeCategory,
+  ingredientUnit,
+} from "helpers/params";
 
 import Divider from "@material-ui/core/Divider";
 import FavoriteIcon from "@material-ui/icons/Favorite";
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import Paper from "@material-ui/core/Paper";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
 
 import { ReactComponent as EmptyImg } from "assets/icons/empty-recipe-img.svg";
 
 import "./style.css";
 
-moment.locale('ru');
+moment.locale("ru");
 
 const Show = (props) => {
   const dispatch = useDispatch();
 
-  const currentId = props.match.params.id
+  const currentId = props.match.params.id;
 
   useEffect(() => {
     dispatch(recipeActions.getId(currentId));
-  }, [dispatch]);
+  }, [dispatch, currentId]);
 
-  const recipe = useSelector(state => _.get(state.recipe, 'current'))
-  
-  const createdAt = !_.isEmpty(recipe) && moment(recipe.createdAt).format("DD MMMM YYYY")
-  const complexity = !_.isEmpty(recipe) && recipeComplexity[recipe.complexity].name
-  const category = !_.isEmpty(recipe) && recipeCategory[recipe.category].name
+  const recipe = useSelector((state) => _.get(state.recipe, "current"));
+  console.log(recipe)
+
+  const createdAt =
+    !_.isEmpty(recipe) && moment(recipe.createdAt).format("DD MMMM YYYY");
+  const complexity =
+    !_.isEmpty(recipe) && recipeComplexity[recipe.complexity].name;
+  const category = !_.isEmpty(recipe) && recipeCategory[recipe.category].name;
 
   const ingredientTable = () => {
-    
-    const mainIngredients = _.map(recipe.ingredients, item => {
-      // console.log(item)
-      const unit = !_.isEmpty(recipe) && ingredientUnit[item.unit].name
-      return item.ingredient.ingredientName + ' - ' + item.ingredientAmount + unit
-    })
+    const mainIngredients = _.map(recipe.ingredients, (item) => {
+      const unit = !_.isEmpty(recipe) && ingredientUnit[item.unit].name;
+      return (
+        item.ingredient.ingredientName + " - " + item.ingredientAmount + unit
+      );
+    });
 
-    const alternativeIngredients = _.map(recipe.ingredients, item => {
-      console.log(item)
-      return _.map(item.alternativeIngredient, altItem => {
-        console.log(altItem)
-        const unit = !_.isEmpty(recipe) && ingredientUnit[altItem.unit].name
-        return altItem.altIngredient.ingredientName + ' - ' + altItem.ingredientAmount + unit
-      })
-    })
+    const alternativeIngredients = _.map(recipe.ingredients, (item) => {
+      return _.map(item.alternativeIngredient, (altItem) => {
+        console.log(altItem);
+        const unit = !_.isEmpty(recipe) && ingredientUnit[altItem.unit].name;
+        return (
+          altItem.altIngredient.ingredientName +
+          " - " +
+          altItem.ingredientAmount +
+          unit
+        );
+      });
+    });
 
     function createData(mainIngredients, alternativeIngredients) {
       return { mainIngredients, alternativeIngredients };
     }
 
-    const rows = [
-      createData(mainIngredients, alternativeIngredients),
-    ];
-  
+    const rows = [createData(mainIngredients, alternativeIngredients)];
+
     return (
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
@@ -76,108 +87,87 @@ const Show = (props) => {
           <TableBody>
             {rows.map((row) => (
               <TableRow key={row.name}>
-                <TableCell component="th" scope="row">{row.mainIngredients}</TableCell>
-                <TableCell align="right">{row.alternativeIngredients}</TableCell>
+                <TableCell component="th" scope="row">
+                  {row.mainIngredients}
+                </TableCell>
+                <TableCell align="right">
+                  {row.alternativeIngredients}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-    )
-  }
-  
+    );
+  };
+
   return (
     <div className="recipe-container">
-      <div className="recipe-header">
-        <div className="recipe-name">{recipe.name}</div>
-        <div className="recipe-info">
-          <div className="recipe-category">{category}</div>
-          <Divider />
-          <div className="recipe-date">{createdAt}</div>
-        </div>
-      </div>
-      <Divider />
-      <div className="recipe-description">
-        <div className="recipe-image">
-          {!_.isNil(recipe.image) ? (
-            <img
-              className="recipe-item-image"
-              src={recipe.image}
-              alt=""
-            />
-          ) : (
-            <EmptyImg />
-          )}
-        </div>
-        <div className="recipe-description-info ">
-          <div className="recipe-description-text col-md-8">{recipe.description}</div>
-          <div className="recipe-description-main">
-            <div className="recipe-description-item">
-              <div className="recipe-description-item-name">
-                Сложность приготовления:
-              </div>
-              <div className="recipe-description-item-desc">{complexity}</div>
+      <Card variant="outlined" className="recipe-card">
+        <CardContent className="recipe-card-content">
+          <div className="recipe-header">
+            <div className="recipe-name">{recipe.name}</div>
+            <div className="recipe-info">
+              <div className="recipe-category">{category}</div>
+              <Divider />
+              <div className="recipe-date">{createdAt}</div>
             </div>
-            <div className="recipe-description-item">
-              <div className="recipe-description-item-name">
-                <FavoriteIcon />
-                {recipe.likes}
+          </div>
+          <Divider />
+          <div className="recipe-description">
+            <div className="recipe-image">
+              {!_.isNil(recipe.image) ? (
+                <img className="recipe-item-image" src={recipe.image} alt="" />
+              ) : (
+                <EmptyImg />
+              )}
+            </div>
+            <div className="recipe-description-info ">
+              <div className="recipe-description-text col-md-8">
+                {recipe.description}
+              </div>
+              <div className="recipe-description-main">
+                <div className="recipe-description-item">
+                  <div className="recipe-description-item-name">
+                    Сложность приготовления:
+                  </div>
+                  <div className="recipe-description-item-desc">
+                    {complexity}
+                  </div>
+                </div>
+                <div className="recipe-description-item">
+                  <div className="recipe-description-item-name">
+                    <FavoriteIcon />
+                    {recipe.likes}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <Divider />
-      {/* <div className="recipe-ingredients">
-        <div className="recipe-ingredients-main">
-          <div className="recipe-item-title">Ингредиенты</div>
-          <List component="nav" aria-label="secondary mailbox folders">
-            <ListItem className="recipe-ingredients-list">
-              {
-                _.map(recipe.ingredients, item => {
-                  console.log(recipe)
-                  const unit = !_.isEmpty(recipe) && ingredientUnit[item.unit].name
-                  return (
-                    <ListItemText primary={`- ${item.ingredient.ingredientName} - ${item.ingredientAmount} ${unit} `} />
-                  )
-                })
-              }
-            </ListItem>
-          </List>
-        </div>
-        <div className="recipe-ingredients-alt">
-          <div className="recipe-item-title">Альтернативные ингредиенты</div>
-          <List component="nav" aria-label="secondary mailbox folders">
-            {
-              _.map(recipe.ingredients, item => {
-                const unit = !_.isEmpty(recipe) && ingredientUnit[item.unit].name
-                return (
-                  <ListItemText primary={`- ${item.ingredient.ingredientName} - ${item.ingredientAmount} ${unit} `} />
-                )
-              })
-            }
-          </List>
-        </div>
-      </div> */}
-      <div className="recipe-ingredients">
-        {ingredientTable()}
-      </div>
-      <Divider />
-      <div className="recipe-steps">
-        <div className="recipe-item-title">ПОШАГОВЫЙ РЕЦЕПТ ПРИГОТОВЛЕНИЯ</div>
-          {
-            _.map(recipe.stages, stage => {
+          <Divider />
+          <div className="recipe-ingredients">{ingredientTable()}</div>
+          <Divider />
+          <div className="recipe-steps">
+            <div className="recipe-item-title">
+              ПОШАГОВЫЙ РЕЦЕПТ ПРИГОТОВЛЕНИЯ
+            </div>
+            {_.map(recipe.stages, (stage) => {
               return (
                 <div className="recipe-steps-item">
-                  <div className="recipe-steps-item-index">Шаг {stage.index + 1}</div>
-                  <div className="recipe-steps-item-desc">{stage.descriprion}</div>
+                  <div className="recipe-steps-item-index">
+                    Шаг {stage.index + 1}
+                  </div>
+                  <div className="recipe-steps-item-desc">
+                    {stage.description}
+                  </div>
                 </div>
-              )
-            })
-          }
-      </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
 
 export default Show;

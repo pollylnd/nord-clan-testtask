@@ -25,6 +25,12 @@ const actions = {
   SET_FILTERS: DOCUMENT + "SET_FILTERS",
 
   CHANGE_FIELD: DOCUMENT + "CHANGE_FIELD",
+  
+  ADD_FIELD_MULTIPLE: DOCUMENT + "ADD_FIELD_MULTIPLE",
+  CHANGE_FIELD_MULTIPLE: DOCUMENT + "CHANGE_FIELD_MULTIPLE",
+  REMOVE_FIELD_MULTIPLE: DOCUMENT + "REMOVE_FIELD_MULTIPLE",
+
+  CHANGE_ALT_INGREDIENT: DOCUMENT + "CHANGE_ALT_INGREDIENT",
 
   get: () => {
     return { type: actions.GET };
@@ -55,9 +61,10 @@ const actions = {
     payload: error,
   }),
 
-  create: () => {
-    return { type: actions.CREATE };
-  },
+  create: (data) => ({
+    type: actions.CREATE,
+    payload: data,
+  }),
 
   createSuccess: (data) => ({
     type: actions.CREATE_SUCCESS,
@@ -109,9 +116,28 @@ const actions = {
 
   changeField: (type, key, value) => ({
     type: actions.CHANGE_FIELD,
-    payload: { type, key, value }
+    payload: { type, key, value },
   }),
 
+  addFieldMultiple: (type, key, index) => ({
+    type: actions.ADD_FIELD_MULTIPLE,
+    payload: { type, key, index },
+  }),
+
+  changeFieldMultiple: (type, key, value, index, field) => ({
+    type: actions.CHANGE_FIELD_MULTIPLE,
+    payload: { type, key, value, index, field },
+  }),
+
+  removeFieldMultiple: (type, key, index) => ({
+    type: actions.REMOVE_FIELD_MULTIPLE,
+    payload: { type, key, index },
+  }),
+
+  changeAltIngredient: (type, key, index, field, value) => ({
+    type: actions.CHANGE_ALT_INGREDIENT,
+    payload: { type, key, index, field, value },
+  }),
 };
 
 export default actions;

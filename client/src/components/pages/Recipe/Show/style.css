@@ -75,6 +75,10 @@
   margin-bottom: 0px;
 }
 
+.recipe-steps {
+  margin-top: 20px;
+}
+
 .recipe-steps-item {
   display: flex;
   margin: 15px;

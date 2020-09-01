@@ -1,4 +1,4 @@
-import { takeEvery, put, all, select } from "redux-saga/effects";
+import { takeEvery, put, all } from "redux-saga/effects";
 import backend from "helpers/api/feathers";
 import _ from "lodash";
 
@@ -30,10 +30,24 @@ function* getId(action) {
 
 }
 
+function* create(action) {
+  try {
+    const recipeData = action.payload
+    const recipe = yield backend.service("recipe").create(recipeData)
+    if(_.size(recipe)) {
+      yield put(actions.getIdSuccess(recipe))
+    }
+  } catch (e) {
+    yield put(actions.getIdFailure(e))
+  }
+
+}
+
 function* recipeSaga() {
   yield all([
     takeEvery(actions.GET, get),
-    takeEvery(actions.GET_ID, getId)
+    takeEvery(actions.GET_ID, getId),
+    takeEvery(actions.CREATE, create)
   ]);
 }
 

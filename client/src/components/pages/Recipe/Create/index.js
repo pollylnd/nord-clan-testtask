@@ -5,7 +5,11 @@ import _ from "lodash";
 
 import recipeActions from "store/recipe/actions";
 
-import { recipeComplexity, recipeCategory, ingredientUnit } from 'helpers/params'
+import {
+  recipeComplexity,
+  recipeCategory,
+  ingredientUnit,
+} from "helpers/params";
 
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -14,44 +18,222 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import DeleteIcon from "@material-ui/icons/Delete";
+import AddIcon from "@material-ui/icons/Add";
 
 import "./style.css";
 
 const Create = () => {
   const dispatch = useDispatch();
-  const [complexity, setDiff] = useState("");
-  const [category, setCategory] = useState("");
-  const [unit, setUnit] = useState("");
-  const [stage, setStage] = useState(0);
+  const [countIngredients, setCountIngredients] = useState(1);
+  const [countAltIngredients, setCountAltIngredients] = useState(1);
+  const [countStages, setCountStages] = useState(1);
 
-  const handleChangeUnit = (event) => {
-    setUnit(event.target.value);
-  };
-
-  const recipe = useSelector(state => _.get(state.recipe, 'create'));
+  const recipe = useSelector((state) => _.get(state.recipe, "create"));
 
   const handleChange = (e) => {
-    const value = _.get(e.target, 'value')
-    const key = _.get(e.target, 'name')
-    
-    dispatch(recipeActions.changeField('create', key, value))
-  }
+    const value = _.get(e.target, "value");
+    const key = _.get(e.target, "name");
+
+    dispatch(recipeActions.changeField("create", key, value));
+  };
+
+  const handleChangeIngredient = (e, index) => {
+    const value = _.get(e.target, "value");
+    const field = _.get(e.target, "name");
+
+    dispatch(
+      recipeActions.changeFieldMultiple(
+        "create",
+        "ingredients",
+        value,
+        index,
+        field
+      )
+    );
+  };
+
+  const handleChangeStage = (e, index) => {
+    const value = _.get(e.target, "value");
+    const field = _.get(e.target, "name");
+
+    dispatch(
+      recipeActions.changeFieldMultiple("create", "stages", value, index, field)
+    );
+  };
+
+  const handleRemoveStage = (index) => {
+    dispatch(recipeActions.removeFieldMultiple("create", "stages", index));
+
+    setCountStages(countStages - 1);
+  };
+
+  const handleAddStage = () => {
+    const newStageIndex = countStages + 1;
+    dispatch(recipeActions.addFieldMultiple("create", "stages", countStages));
+
+    setCountStages(newStageIndex);
+  };
+
+  const handleRemoveIngredient = (index) => {
+    dispatch(recipeActions.removeFieldMultiple("create", "ingredients", index));
+
+    setCountIngredients(countIngredients - 1);
+  };
+
+  const handleAddIngredient = () => {
+    const newIngredientIndex = countIngredients + 1;
+    dispatch(
+      recipeActions.addFieldMultiple("create", "ingredients", countIngredients)
+    );
+
+    setCountIngredients(newIngredientIndex);
+  };
+
+  const handleChangeAltIngredient = (e, index) => {
+    const value = _.get(e.target, "value");
+    const field = _.get(e.target, "name");
+
+    dispatch(
+      recipeActions.changeAltIngredient("create", "ingredients", index, field, value)
+    );
+  };
+
+  const handleCreate = () => {
+    const formData = recipe;
+
+    dispatch(recipeActions.create(formData));
+  };
+
+  const stageForm = () => {
+    return _.map(new Array(countStages), (v, i) => {
+      if (!recipe.stages) {
+        return false;
+      }
+      const stageItem = recipe.stages[i];
+      return (
+        <CardContent>
+          Шаг {i + 1}
+          <FormControl fullWidth>
+            <TextField
+              id="outlined-name"
+              value={_.get(stageItem, "description")}
+              name="description"
+              variant="outlined"
+              required
+              placeholder="Описание"
+              onChange={(e) => handleChangeStage(e, i)}
+            />
+          </FormControl>
+          <DeleteIcon onClick={() => handleRemoveStage(i)} />
+        </CardContent>
+      );
+    });
+  };
+
+  const ingredientForm = () => {
+    return _.map(new Array(countIngredients), (value, index) => {
+      if (!recipe.ingredients) {
+        return false;
+      }
+      const ingredientItem = recipe.ingredients[index];
+      return (
+        <CardContent className="recipe-ingr-form">
+          <TextField
+            id="outlined-name"
+            value={_.get(ingredientItem, "ingredientName")}
+            name="ingredientName"
+            variant="outlined"
+            placeholder="Название"
+            onChange={(e) => handleChangeIngredient(e, index)}
+          />
+          <TextField
+            id="outlined-name"
+            value={_.get(ingredientItem, "ingredientAmount")}
+            name="ingredientAmount"
+            variant="outlined"
+            placeholder="Кол-во"
+            type="number"
+            onChange={(e) => handleChangeIngredient(e, index)}
+          />
+          <FormControl required>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              name="unit"
+              value={_.get(ingredientItem, "unit")}
+              onChange={(e) => handleChangeIngredient(e, index)}
+            >
+              {_.map(ingredientUnit, (item) => {
+                return <MenuItem value={item.value}>{item.name}</MenuItem>;
+              })}
+            </Select>
+          </FormControl>
+          <DeleteIcon onClick={() => handleRemoveIngredient(index)} />
+
+          {altIngredientForm(ingredientItem, index)}
+        </CardContent>
+      );
+    });
+  };
+
+  const altIngredientForm = (ingredient, index) => {
+    const altIngredient = ingredient.altIngredient;
+    return (
+      <>
+        <TextField
+          id="outlined-name"
+          value={_.get(altIngredient, "altIngredientName")}
+          name="ingredientName"
+          variant="outlined"
+          required
+          placeholder="Название"
+          onChange={(e) => handleChangeAltIngredient(e, index)}
+        />
+        <TextField
+          id="outlined-name"
+          value={_.get(altIngredient, "altIngredientAmount")}
+          name="ingredientAmount"
+          variant="outlined"
+          required
+          placeholder="Кол-во"
+          type="number"
+          onChange={(e) => handleChangeAltIngredient(e, index)}
+        />
+        <FormControl required>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            name="unit"
+            value={_.get(altIngredient, "unit")}
+            onChange={(e) => handleChangeAltIngredient(e, index)}
+          >
+            {_.map(ingredientUnit, (item) => {
+              return <MenuItem value={item.value}>{item.name}</MenuItem>;
+            })}
+          </Select>
+        </FormControl>
+      </>
+    );
+  };
 
   return (
-    <>
-      <Typography>Добавление рецепта</Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={7}>
+    <div className="recipe-create-wrapper">
+      <Typography align="center" variant="h3">
+        Добавление рецепта
+      </Typography>
+      <Card>
+        <CardContent>
           <div className="recipe-form">
             <FormControl fullWidth>
               <TextField
                 id="outlined-name"
                 label="Название"
                 name="name"
-                value={_.get(recipe, 'name')}
+                value={_.get(recipe, "name")}
                 variant="outlined"
                 required
                 placeholder="Введите название рецепта"
@@ -75,7 +257,7 @@ const Create = () => {
                 label="Описание"
                 multiline
                 name="description"
-                value={_.get(recipe, 'description')}
+                value={_.get(recipe, "description")}
                 rows={4}
                 placeholder="Добавьте описание рецепта"
                 variant="outlined"
@@ -84,111 +266,70 @@ const Create = () => {
             </FormControl>
 
             <div className="create-recipe-selectors">
-              <FormControl required>
-                <InputLabel id="demo-simple-select-label">Сложность</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="complexity"
-                  value={recipeComplexity[complexity]}
-                  onChange={(e) => handleChange(e)}
-                >
-                  {
-                    _.map(recipeComplexity, item => {
-                      return <MenuItem value={item.value}>{item.name}</MenuItem>
-                    })
-                  }
-                </Select>
-              </FormControl>
-              <FormControl required>
-                <InputLabel id="demo-simple-select-label">Категория</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  name="category"
-                  value={recipeCategory[category]}
-                  onChange={(e) => handleChange(e)}
-                >
-                  {
-                    _.map(recipeCategory, item => {
-                      return <MenuItem value={item.value}>{item.name}</MenuItem>
-                    })
-                  }
-                </Select>
-              </FormControl>
+              <Box width="45%">
+                <Card>
+                  <CardContent>
+                    <FormControl fullWidth required>
+                      <InputLabel id="demo-simple-select-label">
+                        Сложность
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        name="complexity"
+                        value={recipeComplexity[_.get(recipe, "complexity")]}
+                        onChange={(e) => handleChange(e)}
+                      >
+                        {_.map(recipeComplexity, (item) => {
+                          return (
+                            <MenuItem value={item.value}>{item.name}</MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                  </CardContent>
+                </Card>
+              </Box>
+              <Box width="45%">
+                <Card>
+                  <CardContent>
+                    <FormControl fullWidth required>
+                      <InputLabel id="demo-simple-select-label">
+                        Категория
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        name="category"
+                        value={recipeCategory[_.get(recipe, "category")]}
+                        onChange={(e) => handleChange(e)}
+                      >
+                        {_.map(recipeCategory, (item) => {
+                          return (
+                            <MenuItem value={item.value}>{item.name}</MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                  </CardContent>
+                </Card>
+              </Box>
             </div>
+            <>
+              <Button onClick={() => handleAddIngredient()}>
+                + Добавить ингредиент
+              </Button>
+              <Card>{ingredientForm()}</Card>
+            </>
             <div>
-              <Button>+ Добавить шаг</Button>
-              <Card>
-                <CardContent>
-                  Шаг 1
-                  <FormControl fullWidth>
-                    <TextField
-                      id="outlined-name"
-                      label=""
-                      // value={name}
-                      // onChange={handleChange}
-                      variant="outlined"
-                      required
-                      placeholder="Описание"
-                      onChange={(e) => handleChange(e)}
-                    />
-                  </FormControl>
-                </CardContent>
-              </Card>
+              <Button onClick={() => handleAddStage()}>+ Добавить шаг</Button>
+              <Card>{stageForm()}</Card>
             </div>
           </div>
-        </Grid>
-        <Grid item xs={5}>
-          Ингредиенты
-          <>
-            <Button>+ Добавить ингредиент</Button>
-            <Card>
-              <CardContent className="recipe-ingr-form">
-                <TextField
-                  id="outlined-name"
-                  label=""
-                  // value={name}
-                  // onChange={handleChange}
-                  variant="outlined"
-                  required
-                  placeholder="Название"
-                  onChange={(e) => handleChange(e)}
-                />
-                <TextField
-                  id="outlined-name"
-                  label=""
-                  // value={name}
-                  variant="outlined"
-                  required
-                  placeholder="Кол-во"
-                  type="number"
-                  onChange={(e) => handleChange(e)}
-                />
-                <FormControl required>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={unit}
-                    onChange={handleChangeUnit}
-                  >
-                    <MenuItem value={1}>стакан</MenuItem>
-                    <MenuItem value={2}>ст. л.</MenuItem>
-                    <MenuItem value={3}>ч. л.</MenuItem>
-                    <MenuItem value={4}>по вкусу</MenuItem>
-                    <MenuItem value={5}>шт.</MenuItem>
-                    <MenuItem value={6}>г.</MenuItem>
-                    <MenuItem value={7}>мл.</MenuItem>
-                    <MenuItem value={8}>кг.</MenuItem>
-                  </Select>
-                </FormControl>
-              </CardContent>
-            </Card>
-          </>
-        </Grid>
-      </Grid>
-      <Button>Опубликовать</Button>
-    </>
+        </CardContent>
+      </Card>
+      <Button onClick={() => handleCreate()}>Опубликовать</Button>
+    </div>
   );
 };
 

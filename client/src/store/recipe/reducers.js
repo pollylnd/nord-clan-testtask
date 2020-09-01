@@ -10,6 +10,12 @@ const initState = {
     description: "",
     complexity: null,
     category: null,
+    ingredients: [
+      {},
+    ],
+    stages: [
+      {},
+    ]
   },
   errorMessage: "",
 };
@@ -130,6 +136,7 @@ export default function reducer(state = initState, { type, payload }) {
       };
 
     case actions.CHANGE_FIELD:
+    {
       const type = payload.type;
       const key = payload.key;
       const value = payload.value;
@@ -140,6 +147,98 @@ export default function reducer(state = initState, { type, payload }) {
           [key]: value,
         },
       };
+    }
+
+    case actions.ADD_FIELD_MULTIPLE:
+    {
+      const type = payload.type;
+      const key = payload.key;
+      const index = payload.index;
+
+      const oldFields = state[type][key].slice(0, state[type][key].lenght);
+
+      oldFields[index] = {};
+
+      return {
+        ...state,
+        [type]: {
+          ...state[type],
+          [key]: oldFields
+        }
+      }
+    }
+
+    case actions.CHANGE_FIELD_MULTIPLE:
+    {
+      const type = payload.type;
+      const key = payload.key;
+      const value = payload.value;
+      const index = payload.index;
+      const field = payload.field;
+
+      const oldFields = state[type][key].slice(0, state[type][key].lenght);
+      
+      oldFields[index] = {
+        ...oldFields[index],
+        [field]: value
+      };
+
+      return {
+        ...state,
+        [type]: {
+          ...state[type],
+          [key]: oldFields,
+        },
+      };
+    }
+
+    case actions.REMOVE_FIELD_MULTIPLE: 
+    {
+      const type = payload.type;
+      const key = payload.key;
+      const index = payload.index;
+      const oldFields = state[type][key].slice(0, state[type][key].lenght)
+      oldFields.splice(index, 1)
+
+      return {
+        ...state,
+        [type]: {
+          ...state[type],
+          [key]: oldFields
+        }
+      }
+    }
+
+    case actions.CHANGE_ALT_INGREDIENT:
+    {
+      const {
+        type,
+        key,
+        index,
+        field,
+        value,
+      } = payload;
+
+      const allIngredients = state[type][key].slice(0, state[type][key].lenght)
+
+      allIngredients[index] = {
+        ...allIngredients[index],
+        altIngredient: {
+          ...allIngredients[index].altIngredient,
+          [field]: value
+        },
+      };
+
+
+
+      return {
+        ...state,
+        [type]: {
+          ...state[type],
+          [key]: allIngredients,
+        }
+      }
+    }
 
     default:
       return state;

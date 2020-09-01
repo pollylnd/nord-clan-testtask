@@ -1,8 +1,18 @@
+.recipe-create-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .create-recipe-selectors {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .recipe-ingr-form {
   display: flex;
+}
+
+.MuiInput-underline:after {
+  border-bottom: 2px solid #16612c !important;
 }
