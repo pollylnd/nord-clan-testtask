@@ -5,7 +5,7 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const { recipe, ingredient } = sequelizeClient.models;
+  const { recipe_ingredient, ingredient } = sequelizeClient.models;
   const alternative_recipe_ingredient = sequelizeClient.define('alternative_recipe_ingredient', {
     id: {
       type: DataTypes.UUID,
@@ -25,18 +25,18 @@ module.exports = function (app) {
         notEmpty: {
           msg: 'recipeIngredientIdNotNull'
         },
-        isExist: async id => {
-          await recipe.find({ where: { id } })
-            .then(res => {
-              if (!res) {
-                throw new Error('recipeIngredientIdNotFound');
-              } else {
-                if (res.dataValues && res.dataValues.isDeleted) {
-                  throw new Error('recipeIngredientIdIsDeleted');
-                }
-              }
-            });
-        }
+        // isExist: async id => {
+        //   await recipe_ingredient.findOne({ where: { id } })
+        //     .then(res => {
+        //       if (!res) {
+        //         throw new Error('recipeIngredientIdNotFound');
+        //       } else {
+        //         if (res.dataValues && res.dataValues.isDeleted) {
+        //           throw new Error('recipeIngredientIdIsDeleted');
+        //         }
+        //       }
+        //     });
+        // }
       }
     },
     ingredientId: {
@@ -52,7 +52,7 @@ module.exports = function (app) {
           msg: 'ingredientIdNotNull'
         },
         isExist: async id => {
-          await ingredient.find({ where: { id } })
+          await ingredient.findOne({ where: { id } })
             .then(res => {
               if (!res) {
                 throw new Error('ingredientIdNotFound');

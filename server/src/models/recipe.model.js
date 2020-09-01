@@ -17,24 +17,24 @@ module.exports = function (app) {
     authorId: {
       type: DataTypes.UUID,
       foreignKey: true,
-      validate: {
-        isUUID: {
-          args: 4,
-          msg: 'authorIdUUIDMust4'
-        },
-        isExist: async id => {
-          await user.find({ where: { id } })
-            .then(res => {
-              if(!res) {
-                throw new Error('authorIdNotFound');
-              } else {
-                if(res.dataValues && res.dataValues.isDeleted) {
-                  throw new Error('authorIsDeleted');
-                }
-              }
-            });
-        }
-      }
+      // validate: {
+      //   isUUID: {
+      //     args: 4,
+      //     msg: 'authorIdUUIDMust4'
+      //   },
+      //   isExist: async id => {
+      //     await user.findOne({ where: { id } })
+      //       .then(res => {
+      //         if(!res) {
+      //           throw new Error('authorIdNotFound');
+      //         } else {
+      //           if(res.dataValues && res.dataValues.isDeleted) {
+      //             throw new Error('authorIsDeleted');
+      //           }
+      //         }
+      //       });
+      //   }
+      // }
     },
     
     name: {

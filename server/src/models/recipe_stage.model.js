@@ -26,7 +26,7 @@ module.exports = function (app) {
           msg: 'recipeIdNotNull'
         },
         isExist: async id => {
-          await recipe.find({ where: { id } })
+          await recipe.findOne({ where: { id } })
             .then(res => {
               if (!res) {
                 throw new Error('recipeIdNotFound');
@@ -43,7 +43,7 @@ module.exports = function (app) {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    descriprion: {
+    description: {
       type: DataTypes.TEXT,
       allowNull: false,
       validate: {
