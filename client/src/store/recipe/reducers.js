@@ -3,7 +3,10 @@ import actions from "./actions";
 const initState = {
   list: {},
   page: 1,
-  filters: {},
+  filters: {
+    search: "",
+    complexity: ""
+  },
   current: {},
   create: {
     name: "",
@@ -17,6 +20,7 @@ const initState = {
       {},
     ]
   },
+  edit: {},
   errorMessage: "",
 };
 
@@ -54,6 +58,10 @@ export default function reducer(state = initState, { type, payload }) {
       return {
         ...state,
         current: payload,
+        edit: { 
+          ...state.edit,
+          ...payload 
+        },
         errorMessage: "",
       };
 
@@ -72,7 +80,7 @@ export default function reducer(state = initState, { type, payload }) {
     case actions.CREATE_SUCCESS:
       return {
         ...state,
-        create: payload.data,
+        create: {},
         errorMessage: "",
       };
 
@@ -91,7 +99,7 @@ export default function reducer(state = initState, { type, payload }) {
     case actions.UPDATE_SUCCESS:
       return {
         ...state,
-        current: payload.data,
+        current: {},
         errorMessage: "",
       };
 
@@ -129,17 +137,26 @@ export default function reducer(state = initState, { type, payload }) {
       };
 
     case actions.SET_FILTERS:
-      return {
-        ...state,
-        page: payload.page,
-        filters: payload.filters,
-      };
+      {
+        console.log(payload)
+        return {
+          ...state,
+          filters: {
+            ...state.filters,
+            ...payload
+          }
+        };
+      }
+      
 
     case actions.CHANGE_FIELD:
     {
-      const type = payload.type;
-      const key = payload.key;
-      const value = payload.value;
+      const {
+        type,
+        key,
+        value
+      } = payload;
+
       return {
         ...state,
         [type]: {
@@ -151,9 +168,11 @@ export default function reducer(state = initState, { type, payload }) {
 
     case actions.ADD_FIELD_MULTIPLE:
     {
-      const type = payload.type;
-      const key = payload.key;
-      const index = payload.index;
+      const {
+        type,
+        key,
+        index
+      } = payload;
 
       const oldFields = state[type][key].slice(0, state[type][key].lenght);
 
@@ -170,11 +189,13 @@ export default function reducer(state = initState, { type, payload }) {
 
     case actions.CHANGE_FIELD_MULTIPLE:
     {
-      const type = payload.type;
-      const key = payload.key;
-      const value = payload.value;
-      const index = payload.index;
-      const field = payload.field;
+      const {
+        type,
+        key,
+        value,
+        index,
+        field,
+      } = payload;
 
       const oldFields = state[type][key].slice(0, state[type][key].lenght);
       
@@ -194,9 +215,12 @@ export default function reducer(state = initState, { type, payload }) {
 
     case actions.REMOVE_FIELD_MULTIPLE: 
     {
-      const type = payload.type;
-      const key = payload.key;
-      const index = payload.index;
+      const {
+        type,
+        key,
+        index
+      } = payload;
+
       const oldFields = state[type][key].slice(0, state[type][key].lenght)
       oldFields.splice(index, 1)
 
@@ -220,16 +244,14 @@ export default function reducer(state = initState, { type, payload }) {
       } = payload;
 
       const allIngredients = state[type][key].slice(0, state[type][key].lenght)
-
+      
       allIngredients[index] = {
         ...allIngredients[index],
-        altIngredient: {
-          ...allIngredients[index].altIngredient,
+        alternativeIngredient: {
+          ...allIngredients[index].alternativeIngredient,
           [field]: value
         },
       };
-
-
 
       return {
         ...state,

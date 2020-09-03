@@ -76,9 +76,10 @@ const actions = {
     payload: error,
   }),
 
-  update: () => {
-    return { type: actions.UPDATE };
-  },
+  update: (data) => ({
+    type: actions.UPDATE,
+    payload: data,
+  }),
 
   updateSuccess: (data) => ({
     type: actions.UPDATE_SUCCESS,
@@ -104,9 +105,9 @@ const actions = {
     payload: error,
   }),
 
-  setFilters: (filters, page = 1) => ({
+  setFilters: (filters) => ({
     type: actions.SET_FILTERS,
-    payload: { filters, page },
+    payload: filters,
   }),
 
   setPage: (page) => ({

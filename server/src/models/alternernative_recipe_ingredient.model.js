@@ -51,18 +51,18 @@ module.exports = function (app) {
         notEmpty: {
           msg: 'ingredientIdNotNull'
         },
-        isExist: async id => {
-          await ingredient.findOne({ where: { id } })
-            .then(res => {
-              if (!res) {
-                throw new Error('ingredientIdNotFound');
-              } else {
-                if (res.dataValues && res.dataValues.isDeleted) {
-                  throw new Error('ingredientIdIsDeleted');
-                }
-              }
-            });
-        }
+        // isExist: async id => {
+        //   await ingredient.findOne({ where: { id } })
+        //     .then(res => {
+        //       if (!res) {
+        //         throw new Error('ingredientIdNotFound');
+        //       } else {
+        //         if (res.dataValues && res.dataValues.isDeleted) {
+        //           throw new Error('ingredientIdIsDeleted');
+        //         }
+        //       }
+        //     });
+        // }
       }
     },
     ingredientAmount: {

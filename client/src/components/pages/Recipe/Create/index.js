@@ -22,14 +22,12 @@ import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import DeleteIcon from "@material-ui/icons/Delete";
-import AddIcon from "@material-ui/icons/Add";
 
 import "./style.css";
 
 const Create = () => {
   const dispatch = useDispatch();
   const [countIngredients, setCountIngredients] = useState(1);
-  const [countAltIngredients, setCountAltIngredients] = useState(1);
   const [countStages, setCountStages] = useState(1);
 
   const recipe = useSelector((state) => _.get(state.recipe, "create"));

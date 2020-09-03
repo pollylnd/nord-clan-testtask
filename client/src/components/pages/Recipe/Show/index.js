@@ -57,16 +57,22 @@ const Show = (props) => {
     });
 
     const alternativeIngredients = _.map(recipe.ingredients, (item) => {
-      return _.map(item.alternativeIngredient, (altItem) => {
-        console.log(altItem);
-        const unit = !_.isEmpty(recipe) && ingredientUnit[altItem.unit].name;
+      const alternativeIngredient = item.alternativeIngredient;
+
+      if (!_.isEmpty(alternativeIngredient) && !_.isNil(alternativeIngredient)) {
+        const unitInteger = _.get(alternativeIngredient, 'unit');
+        const unit = _.get(_.get(ingredientUnit, `${unitInteger}`), 'name');
+  
         return (
-          altItem.altIngredient.ingredientName +
+          _.get(alternativeIngredient, 'altIngredient.ingredientName') +
           " - " +
-          altItem.ingredientAmount +
+          _.get(alternativeIngredient, 'ingredientAmount') +
           unit
         );
-      });
+      } else {
+        return "";
+      }
+
     });
 
     function createData(mainIngredients, alternativeIngredients) {
