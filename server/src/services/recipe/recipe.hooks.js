@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { Sequelize, Op } = require("sequelize");
+const { Op } = require("sequelize");
 
 module.exports = {
   before: {
@@ -17,15 +17,23 @@ module.exports = {
           } = sequelizeClient.models;
 
           const recipeSearch = params.query.recipeSearch;
+          const recipeAuthor = params.query.authorId;
           const complexity = params.query.complexity;
+          const category = params.query.category;
 
           delete params.query.recipeSearch;
-          delete params.query.recipeSearch;
+          delete params.query.authorId;
+          delete params.query.complexity;
+          delete params.query.category;
 
-          let query = {};
+          let query = {
+            [Op.or]: [],
+            [Op.and]: [],
+          };
 
           if (recipeSearch) {
             query[Op.or] = [
+              ...query[Op.or],
               {
                 '$recipe.name$': {
                   [Op.iLike]: '%' + recipeSearch + '%'
@@ -40,7 +48,44 @@ module.exports = {
           }
 
           if (complexity) {
-            query[Op.eq] = complexity;
+            query[Op.and] = [
+              ...query[Op.and],
+              {
+                'complexity': {
+                  [Op.eq]: complexity
+                }
+              }
+            ];
+          }
+
+          if (category) {
+            query[Op.and] = [
+              ...query[Op.and],
+              {
+                'category': {
+                  [Op.eq]: category
+                }
+              }
+            ];
+          }
+
+          if (recipeAuthor) {
+            query[Op.and] = [
+              ...query[Op.and],
+              {
+                'authorId': {
+                  [Op.eq]: recipeAuthor
+                }
+              }
+            ];
+          }
+
+          if (_.isEmpty(query[Op.or])) {
+            delete query[Op.or];
+          }
+
+          if (_.isEmpty(query[Op.and])) {
+            delete query[Op.and];
           }
 
           const result = await recipeModel.findAll({
@@ -64,8 +109,20 @@ module.exports = {
             ]
           }).then((result) => JSON.parse(JSON.stringify(result)));
 
+          const resultWithImagesPromises = _.map(result, async recipeItem => {
+            if(!_.isNil(recipeItem.image)) {
+              const recipeImage = await app.service("uploads").get(recipeItem.image);
+              recipeItem.image = {
+                src: recipeImage.uri,
+              };
+            }
+            
+            return recipeItem;
+          });
+          const resultWithImages = await Promise.all(resultWithImagesPromises).then((result) =>JSON.parse(JSON.stringify(result)));
+
           hook.result = {
-            data: result,
+            data: resultWithImages,
           };
         } catch (error) {
           console.log(error);
@@ -208,61 +265,50 @@ module.exports = {
           });
 
           // find or create ingredient
-          _.map(data.ingredients, async (ingredient) => {
-            const ingredientName = ingredient["ingredient.ingredientName"];
+          const findOrCreateIngredientPromise = _.map(data.ingredients, async (ingredient) => {
+            const ingredientName = ingredient["ingredient.ingredientName"] || ingredient.ingredient.ingredientName;
             let newIngredient = null;
 
             if (ingredientName) {
-              newIngredient = await ingredientModel
-                .findOne({
-                  where: {
-                    ingredientName,
-                  },
-                })
-                .then((result) => JSON.parse(JSON.stringify(result)));
+              newIngredient = await ingredientModel.findOne({
+                where: {
+                  ingredientName,
+                },
+              }).then((result) => JSON.parse(JSON.stringify(result)));
 
               if (!newIngredient) {
-                newIngredient = await ingredientModel
-                  .create({
-                    ingredientName,
-                  })
-                  .then((result) => JSON.parse(JSON.stringify(result)));
+                newIngredient = await ingredientModel.create({
+                  ingredientName,
+                }).then((result) => JSON.parse(JSON.stringify(result)));
               }
             }
 
-            const newRecipeIngredient = await recipeIngredientModel
-              .create({
-                recipeId: id,
-                ingredientAmount: ingredient.ingredientAmount,
-                unit: ingredient.unit,
-                ingredientId: newIngredient.id,
-              })
-              .then((result) => JSON.parse(JSON.stringify(result)));
+            const newRecipeIngredient = await recipeIngredientModel.create({
+              recipeId: id,
+              ingredientAmount: ingredient.ingredientAmount,
+              unit: ingredient.unit,
+              ingredientId: newIngredient.id,
+            }).then((result) => JSON.parse(JSON.stringify(result)));
 
             const altIngredientData = _.get(
               ingredient,
               "alternativeIngredient"
             );
-            console.log(altIngredientData);
 
             let altIngredient = null;
             let newAltIngredient;
 
             if (altIngredientData) {
-              altIngredient = await ingredientModel
-                .findOne({
-                  where: {
-                    ingredientName: altIngredientData.ingredientName,
-                  },
-                })
-                .then((result) => JSON.parse(JSON.stringify(result)));
+              altIngredient = await ingredientModel.findOne({
+                where: {
+                  ingredientName: altIngredientData.ingredientName,
+                },
+              }).then((result) => JSON.parse(JSON.stringify(result)));
 
               if (!altIngredient) {
-                altIngredient = await ingredientModel
-                  .create({
-                    ingredientName: altIngredientData.ingredientName,
-                  })
-                  .then((result) => JSON.parse(JSON.stringify(result)));
+                altIngredient = await ingredientModel.create({
+                  ingredientName: altIngredientData.ingredientName,
+                }).then((result) => JSON.parse(JSON.stringify(result)));
               }
 
               newAltIngredient = await altRecipeIngredientModel.create({
@@ -281,40 +327,35 @@ module.exports = {
             ];
           });
 
-          _.map(data.stages, async (stageItem, i) => {
+          const findOrCreateStagesPromise =_.map(data.stages, async (stageItem, i) => {
             let existsRecipeStage = null;
             if (stageItem.id) {
               existsRecipeStage = await recipeStageModel.findOne({
                 where: { id: stageItem.id },
               });
             }
-            console.log(stageItem);
+
             if (!existsRecipeStage) {
-              return await recipeStageModel
-                .create({
-                  recipeId: id,
-                  description: stageItem.description,
-                  index: stageItem.index,
-                })
-                .then((result) => JSON.parse(JSON.stringify(result)));
+              return await recipeStageModel.create({
+                recipeId: id,
+                description: stageItem.description,
+                index: stageItem.index,
+              }).then((result) => JSON.parse(JSON.stringify(result)));
             } else {
-              return await app
-                .service("recipe_stage")
-                .patch(stageItem.id, {
-                  recipeId: id,
-                  description: stageItem.description,
-                  index: stageItem.index,
-                })
-                .then((result) => JSON.parse(JSON.stringify(result)));
+              return await app.service("recipe_stage").patch(stageItem.id, {
+                recipeId: id,
+                description: stageItem.description,
+                index: stageItem.index,
+              }).then((result) => JSON.parse(JSON.stringify(result)));
             }
           });
 
-          // await Promise.all(createIngredientsPromises).then((result) =>
-          //   JSON.parse(JSON.stringify(result))
-          // );
-          // await Promise.all(createStagesPromises).then((result) =>
-          //   JSON.parse(JSON.stringify(result))
-          // );
+          await Promise.all(findOrCreateIngredientPromise).then((result) =>
+            JSON.parse(JSON.stringify(result))
+          );
+          await Promise.all(findOrCreateStagesPromise).then((result) =>
+            JSON.parse(JSON.stringify(result))
+          );
         } catch (error) {
           console.log(error);
         }

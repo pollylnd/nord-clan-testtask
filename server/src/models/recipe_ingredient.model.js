@@ -67,12 +67,17 @@ module.exports = function (app) {
     },
     ingredientAmount: {
       type: DataTypes.FLOAT,
-      allowNull: false,
+      allowNull: true,
     },
     
     unit: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'Unit can\'t be empty',
+        },
+      }
     },
     isDeleted: {
       type: DataTypes.BOOLEAN,

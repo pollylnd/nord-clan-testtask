@@ -48,7 +48,7 @@ module.exports = function (app) {
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: 'Description can\'t be empty'
+          msg: 'Description can\'t be empty',
         },
       }
     },

@@ -43,7 +43,7 @@ module.exports = function (app) {
           msg: 'isLowercaseEmailErr'
         },
         isUnique: async (email) => {
-          await user.find({ where: { email } })
+          await user.findOne({ where: { email } })
             .then(result => {
               if (result) {
                 throw new Error('isExistEmail');

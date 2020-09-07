@@ -5,7 +5,7 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const { recipe_ingredient, ingredient } = sequelizeClient.models;
+  // const { recipe_ingredient, ingredient } = sequelizeClient.models;
   const alternative_recipe_ingredient = sequelizeClient.define('alternative_recipe_ingredient', {
     id: {
       type: DataTypes.UUID,
@@ -67,12 +67,17 @@ module.exports = function (app) {
     },
     ingredientAmount: {
       type: DataTypes.FLOAT,
-      allowNull: false,
+      allowNull: true,
     },
     
     unit: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'Unit can\'t be empty',
+        },
+      }
     },
     isDeleted: {
       type: DataTypes.BOOLEAN,

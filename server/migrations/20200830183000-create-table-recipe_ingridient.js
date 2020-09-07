@@ -21,7 +21,7 @@ module.exports = {
       },
       ingredientAmount: {
         type: Sequelize.FLOAT,
-        allowNull: false,
+        allowNull: true,
       },
       
       unit: {
