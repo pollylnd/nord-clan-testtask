@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import _ from "lodash";
 
-import userActions from "store/user/actions";
+import authActions from "store/auth/actions";
 
 import TextField from "@material-ui/core/TextField";
 import Card from "@material-ui/core/Card";
@@ -16,7 +16,7 @@ import FormControl from "@material-ui/core/FormControl";
 import "./style.css";
 
 const SignUp = () => {
-  const user = useSelector((state) => _.get(state.user, 'signUp'));
+  const user = useSelector((state) => _.get(state.auth, "signUp"));
   const dispatch = useDispatch();
 
   const isEmptyFields = (fields) => {
@@ -36,19 +36,18 @@ const SignUp = () => {
       return false;
     }
 
-    dispatch(userActions.signUp(user));
+    dispatch(authActions.signUp(user));
   };
 
   const handleChange = (e) => {
-    const value = _.get(e.target, 'value')
-    const key = _.get(e.target, 'name')
-    console.log(value, key)
-    
-    dispatch(userActions.changeField('signUp', key, value))
-  }
+    const value = _.get(e.target, "value");
+    const key = _.get(e.target, "name");
+
+    dispatch(authActions.changeField("signUp", key, value));
+  };
 
   return (
-    <div className="signup-form-wrapper">
+    <form className="signup-form-wrapper">
       <Card variant="outlined" className="signup-form-card">
         <CardContent className="signup-form-card-content">
           <Typography align="center" variant="h6">
@@ -62,7 +61,7 @@ const SignUp = () => {
                 label="Имя"
                 name="userName"
                 variant="outlined"
-                value={_.get(user, 'userName')}
+                value={_.get(user, "userName")}
                 onChange={(e) => handleChange(e)}
               />
             </FormControl>
@@ -74,7 +73,7 @@ const SignUp = () => {
                 name="email"
                 type="email"
                 variant="outlined"
-                value={_.get(user, 'email')}
+                value={_.get(user, "email")}
                 onChange={(e) => handleChange(e)}
               />
             </FormControl>
@@ -87,7 +86,7 @@ const SignUp = () => {
                 variant="outlined"
                 autoComplete="current-password"
                 name="password"
-                value={_.get(user, 'password')}
+                value={_.get(user, "password")}
                 onChange={(e) => handleChange(e)}
               />
             </FormControl>
@@ -104,11 +103,13 @@ const SignUp = () => {
           </CardActions>
           <div className="signup-form-signin">
             Уже зарегистрированы? &nbsp;
-            <Link className="signup-form-label" to="/sign-in">Войдите</Link>
+            <Link className="signup-form-label" to="/sign-in">
+              Войдите
+            </Link>
           </div>
         </CardContent>
       </Card>
-    </div>
+    </form>
   );
 };
 

@@ -13,6 +13,31 @@
   display: flex;
 }
 
-.MuiInput-underline:after {
-  border-bottom: 2px solid #16612c !important;
+.create-recipe-selectors .MuiInput-underline:after {
+  border-bottom: 2px solid #16612c;
+}
+
+.recipe-upload-image {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.recipe-image {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+}
+
+.recipe-image-name {
+  color: #71605a;
+  margin-bottom: 15px;
+}
+
+.img-preview {
+  width: 70%;
+}
+
+.recipe-image-content {
+  display: flex;
+  align-items: flex-start;
 }

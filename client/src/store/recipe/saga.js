@@ -7,7 +7,6 @@ import actions from "./actions";
 
 function* get(action) {
   try {
-    console.log(action)
     const recipeList = yield backend.service("recipe").find({
       query: {
         ...action.payload,
@@ -25,10 +24,17 @@ function* getId(action) {
     const id = action.payload;
     const recipe = yield backend.service("recipe").get(id);
     if (_.size(recipe)) {
+      if(!_.isNil(recipe.image)) {
+        const uploadedImage = yield backend.service("uploads").get(recipe.image)
+        delete recipe.image
+        recipe.image = {
+          src: uploadedImage.uri
+        }
+      }
       yield put(actions.getIdSuccess(recipe));
     }
-    console.log();
   } catch (e) {
+    console.log(e)
     yield put(actions.getIdFailure(e));
   }
 }
@@ -36,6 +42,21 @@ function* getId(action) {
 function* create(action) {
   try {
     const recipeData = action.payload;
+
+    if(!_.isNil(recipeData.image)) {
+      const formData = new FormData();
+      formData.append("uri", recipeData.image.src);
+
+      const uploadData = yield backend.service("uploads").create(formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Content-Disposition": "form-data",
+        },
+      });
+  
+      recipeData.image = uploadData.id;
+    }
+
     const recipe = yield backend.service("recipe").create(recipeData);
     if (_.size(recipe)) {
       yield put(actions.createSuccess(recipeData));
@@ -48,19 +69,49 @@ function* create(action) {
 }
 
 function* update(action) {
-  console.log(action.payload);
   try {
     const recipeData = action.payload;
-    console.log(action.payload);
-    const recipe = yield backend
-      .service("recipe")
-      .patch(recipeData.id, recipeData);
+    
+    if(!_.isNil(recipeData.image)) {
+      const formData = new FormData();
+      formData.append("uri", recipeData.image.src);
+
+      const uploadData = yield backend.service("uploads").create(formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Content-Disposition": "form-data",
+        },
+      });
+  
+      recipeData.image = uploadData.id;
+    }
+    
+    const recipe = yield backend.service("recipe").patch(recipeData.id, recipeData);
     if (_.size(recipe)) {
       yield put(actions.updateSuccess(recipeData));
+      yield put(push(`/recipe/${recipeData.id}`));
     }
   } catch (e) {
     console.log(e);
     yield put(actions.updateFailure(e));
+  }
+}
+
+function* remove(action) {
+  try {
+    const id = action.payload
+    console.log(action)
+
+    const deleteRecipe = yield backend.service("recipe").remove(id)
+
+    if(_.size(deleteRecipe)) {
+      yield put(actions.removeSuccess(deleteRecipe))
+      yield put(push('/dashboard'));
+    }
+
+  } catch (e) {
+    console.log(e)
+    yield put(actions.removeFailure(e))
   }
 }
 
@@ -71,6 +122,8 @@ function* recipeSaga() {
     takeEvery(actions.CREATE, create),
     takeEvery(actions.UPDATE, update),
     takeEvery(actions.SET_FILTERS, get),
+    takeEvery(actions.RESET_FILTERS, get),
+    takeEvery(actions.REMOVE, remove)
   ]);
 }
 

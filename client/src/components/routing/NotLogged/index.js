@@ -6,10 +6,8 @@ import SignIn from "components/pages/SignIn";
 import SignUp from "components/pages/SignUp";
 import Dashboard from "components/pages/Dashboard";
 import RecipeShow from "components/pages/Recipe/Show";
-import RecipeEdit from "components/pages/Recipe/Edit";
-import RecipeCreate from "components/pages/Recipe/Create";
 
-export default function LoggedApp() {
+export default function NotLoggedApp() {
   return (
     <Switch>
       <Route exact path="/" component={Dashboard} />
@@ -17,8 +15,6 @@ export default function LoggedApp() {
       <Route path="/sign-in" component={SignIn} />
       <Route path="/sign-up" component={SignUp} />
       <Route path="/recipe/:id" component={RecipeShow} />
-      <Route path="/recipe-edit/:id" component={RecipeEdit} />
-      <Route path="/recipe-create" component={RecipeCreate} />
     </Switch>
   );
 }

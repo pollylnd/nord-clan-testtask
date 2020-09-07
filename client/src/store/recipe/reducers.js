@@ -3,16 +3,14 @@ import actions from "./actions";
 const initState = {
   list: {},
   page: 1,
-  filters: {
-    search: "",
-    complexity: ""
-  },
+  filters: {},
   current: {},
   create: {
     name: "",
     description: "",
     complexity: null,
     category: null,
+    image: null,
     ingredients: [
       {},
     ],
@@ -109,20 +107,16 @@ export default function reducer(state = initState, { type, payload }) {
         errorMessage: "Error",
       };
 
-    case actions.REMOVE:
-      return {
-        ...state,
-        errorMessage: "",
-      };
-
     case actions.REMOVE_SUCCESS:
-      return {
-        ...state,
-        list: {
-          ...state.list,
-        },
-        errorMessage: "",
-      };
+      {
+        const newList = {...state.list}
+        delete newList[payload.id]
+        return {
+          ...state,
+          origin: {...newList},
+          errorMessage: "",
+        };
+      }
 
     case actions.REMOVE_FAILURE:
       return {
@@ -138,7 +132,6 @@ export default function reducer(state = initState, { type, payload }) {
 
     case actions.SET_FILTERS:
       {
-        console.log(payload)
         return {
           ...state,
           filters: {
@@ -147,6 +140,16 @@ export default function reducer(state = initState, { type, payload }) {
           }
         };
       }
+
+    case actions.RESET_FILTERS:
+    {
+      return {
+        ...state,
+        filters: {
+          ...payload.filters,
+        }
+      }
+    }
       
 
     case actions.CHANGE_FIELD:

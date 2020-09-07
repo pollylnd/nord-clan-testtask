@@ -29,15 +29,36 @@ const Create = () => {
   const dispatch = useDispatch();
   const [countIngredients, setCountIngredients] = useState(1);
   const [countStages, setCountStages] = useState(1);
+  const [errorField, setErrorField] = useState([])
 
   const recipe = useSelector((state) => _.get(state.recipe, "create"));
+  const currentUser = useSelector((state) => _.get(state.auth, "user"));
 
   const handleChange = (e) => {
     const value = _.get(e.target, "value");
     const key = _.get(e.target, "name");
-
+ 
     dispatch(recipeActions.changeField("create", key, value));
   };
+
+  const onDrop = (acceptedFiles) => {
+    acceptedFiles.forEach((file) => {
+      const fileReader = new FileReader()
+      fileReader.onload = function (event) {
+        const image = new Image()
+        image.src = fileReader.result
+        image.onload = function (e) {
+          const imageInfo = {
+            name: file.name,
+            src: fileReader.result,
+            type: file.type
+          }
+          dispatch(recipeActions.changeField("create", "image", imageInfo));
+        }
+      }
+      fileReader.readAsDataURL(file)
+    })
+  }
 
   const handleChangeIngredient = (e, index) => {
     const value = _.get(e.target, "value");
@@ -96,14 +117,38 @@ const Create = () => {
     const field = _.get(e.target, "name");
 
     dispatch(
-      recipeActions.changeAltIngredient("create", "ingredients", index, field, value)
+      recipeActions.changeAltIngredient(
+        "create",
+        "ingredients",
+        index,
+        field,
+        value
+      )
     );
   };
 
+  const mapValidation = [
+    'name',
+    'complexity',
+    'category',
+  ]
+
   const handleCreate = () => {
     const formData = recipe;
+    const errorFields = [];
 
-    dispatch(recipeActions.create(formData));
+    formData.authorId = currentUser.id
+    formData.author = currentUser.name
+    
+    for(let field in formData) {
+      if(!formData[field] && _.includes(mapValidation, field)) {
+        errorFields.push(field)
+        setErrorField(prev => [...prev, field])
+      }
+    }
+    if( _.isEmpty(errorFields)) {
+      dispatch(recipeActions.create(formData));
+    }
   };
 
   const stageForm = () => {
@@ -228,6 +273,7 @@ const Create = () => {
           <div className="recipe-form">
             <FormControl fullWidth>
               <TextField
+                error={_.includes(errorField, 'name') && _.isEmpty(_.get(recipe, "name")) ? true : false}
                 id="outlined-name"
                 label="Название"
                 name="name"
@@ -236,19 +282,38 @@ const Create = () => {
                 required
                 placeholder="Введите название рецепта"
                 onChange={(e) => handleChange(e)}
+                // helperText="Incorrect entry."
               />
             </FormControl>
 
-            <Dropzone onDrop={(acceptedFiles) => console.log(acceptedFiles)}>
-              {({ getRootProps, getInputProps }) => (
-                <section>
-                  <div {...getRootProps()}>
-                    <input {...getInputProps()} />
-                    <p>Загрузите фотографию</p>
-                  </div>
-                </section>
-              )}
-            </Dropzone>
+            <div className='recipe-upload-image'>
+              <Dropzone 
+                onDrop={(acceptedFiles) => onDrop(acceptedFiles)}
+                accept="image/*"
+                multiple={false}
+              >
+                {({ getRootProps, getInputProps }) => (
+                  <section>
+                    <div {...getRootProps()}>
+                      <input {...getInputProps()} />
+                      <Button variant="contained" component="span">
+                        Загрузите изображение
+                      </Button>
+                    </div>
+                    {
+                      !_.isNil(recipe.image) && (
+                        <div className="recipe-image">
+                          <span className="recipe-image-name">{recipe.image.name}</span>
+                          <img className='img-preview' src={recipe.image.src} alt={recipe.image.name} />
+                        </div>
+                      )
+                    }
+                  </section>
+                )}
+                
+              </Dropzone>
+            </div>
+
             <FormControl fullWidth>
               <TextField
                 id="outlined-multiline-static"
@@ -267,7 +332,8 @@ const Create = () => {
               <Box width="45%">
                 <Card>
                   <CardContent>
-                    <FormControl fullWidth required>
+                    <FormControl fullWidth required 
+                      error={_.includes(errorField, 'complexity') && _.isNil(_.get(recipe, "complexity")) ? true : false}>
                       <InputLabel id="demo-simple-select-label">
                         Сложность
                       </InputLabel>
@@ -291,7 +357,8 @@ const Create = () => {
               <Box width="45%">
                 <Card>
                   <CardContent>
-                    <FormControl fullWidth required>
+                    <FormControl fullWidth required
+                      error={_.includes(errorField, 'category') && _.isNil(_.get(recipe, "category")) ? true : false}>
                       <InputLabel id="demo-simple-select-label">
                         Категория
                       </InputLabel>

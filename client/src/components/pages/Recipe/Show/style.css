@@ -14,9 +14,16 @@
   padding: 30px;
 }
 
+.recipe-header-right {
+  display: flex;
+  flex-direction: column;
+}
+
 .recipe-info {
   color: #004d40;
-  text-align: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .recipe-category {
@@ -42,17 +49,19 @@
 .recipe-description-text {
   width: 80%;
   text-align: start;
+  color: #424242;
 }
 
 .recipe-description-main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-left: 20px;
+  margin-left: 30px;
+  align-items: flex-end;
 }
 
 .recipe-description-item {
-  text-align: start;
+  text-align: end;
 }
 
 .recipe-description-item-name {
@@ -105,4 +114,23 @@
 .recipe-ingredients {
   display: flex;
   justify-content: space-between;
+}
+
+.recipe-edit-button {
+  margin-bottom: 15px;
+  padding: 7px;
+  background-color: #71605a;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.MuiTableCell-root.recipe-table-header {
+  font-size: 17px;
+  /* */
+}
+
+.MuiTableRow-head {
+  background-color:  #fbf3eb;
 }

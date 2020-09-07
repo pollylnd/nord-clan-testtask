@@ -22,6 +22,7 @@ import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import DeleteIcon from "@material-ui/icons/Delete";
+import ClearIcon from '@material-ui/icons/Clear';
 
 // import "./style.css";
 
@@ -48,6 +49,29 @@ const Edit = (props) => {
     const key = _.get(e.target, "name");
 
     dispatch(recipeActions.changeField("edit", key, value));
+  };
+
+  const onDrop = (acceptedFiles) => {
+    acceptedFiles.forEach((file) => {
+      const fileReader = new FileReader()
+      fileReader.onload = function (event) {
+        const image = new Image()
+        image.src = fileReader.result
+        image.onload = function (e) {
+          const imageInfo = {
+            name: file.name,
+            src: fileReader.result,
+            type: file.type
+          }
+          dispatch(recipeActions.changeField("edit", "image", imageInfo));
+        }
+      }
+      fileReader.readAsDataURL(file)
+    })
+  }
+
+  const handleRemoveImage = () => {
+    dispatch(recipeActions.changeField("edit", "image", null));
   };
 
   const handleChangeIngredient = (e, index) => {
@@ -253,16 +277,40 @@ const Edit = (props) => {
               />
             </FormControl>
 
-            <Dropzone onDrop={(acceptedFiles) => console.log(acceptedFiles)}>
-              {({ getRootProps, getInputProps }) => (
-                <section>
-                  <div {...getRootProps()}>
-                    <input {...getInputProps()} />
-                    <p>Загрузите фотографию</p>
-                  </div>
-                </section>
-              )}
-            </Dropzone>
+            <div className='recipe-upload-image'>
+              <Dropzone 
+                onDrop={(acceptedFiles) => onDrop(acceptedFiles)}
+                accept="image/*"
+                multiple={false}
+              >
+                {({ getRootProps, getInputProps }) => (
+                  <section>
+                    <div {...getRootProps()}>
+                      <input {...getInputProps()} />
+                      <Button variant="contained" component="span">
+                        Загрузите изображение
+                      </Button>
+                    </div>
+                    {
+                      !_.isNil(recipe.image) && (
+                        <div className="recipe-image">
+                          <span className="recipe-image-name">{recipe.image.name}</span>
+                          <div className="recipe-image-content">
+                            <img className='img-preview' src={recipe.image.src} alt={recipe.image.name} />
+                            <Button onClick={() => handleRemoveImage()}>
+                              <ClearIcon />
+                            </Button>
+                          </div>
+                          
+                        </div>
+                      )
+                    }
+                  </section>
+                )}
+                
+              </Dropzone>
+            </div>
+
             <FormControl fullWidth>
               Описание
               <TextField

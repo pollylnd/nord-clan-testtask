@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -19,10 +19,10 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import ListItemText from "@material-ui/core/ListItemText";
 import Select from "@material-ui/core/Select";
-import Checkbox from "@material-ui/core/Checkbox";
+import Button from "@material-ui/core/Button";
 import InputLabel from "@material-ui/core/InputLabel";
+import Chip from "@material-ui/core/Chip";
 
 import { ReactComponent as EmptyImg } from "assets/icons/empty-recipe-img.svg";
 
@@ -31,62 +31,90 @@ import { TextField } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   link: {
-    textDecoration: 'none'
+    textDecoration: "none",
   },
   root: {
     flexGrow: 1,
   },
-  paper: {
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
+  card: {
+    height: 420,
+  },
+  ingredients: {
+    height: 50,
   },
 }));
 
-const Dashboard = () => {
+const Dashboard = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(recipeActions.get());
-  }, [dispatch]);
-
-  const [category, setCategory] = useState([]);
-
-  const handleSelectCategory = (event) => {
-    setCategory(event.target.value);
-  };
+    if(!_.isNil(props.authorId)) {
+      dispatch(recipeActions.get({
+        authorId: props.authorId
+      }));
+    } else {
+      dispatch(recipeActions.get());
+    }
+    
+  }, [dispatch, props.authorId]);
 
   const recipeList = useSelector((state) => _.get(state.recipe, "list"));
+
   const recipeSearchFilter = useSelector((state) =>
     _.get(state.recipe, "filters.recipeSearch")
   );
   const recipeComplexityFilter = useSelector((state) =>
     _.get(state.recipe, "filters.complexity")
   );
+  const recipeCategoryFilter = useSelector((state) =>
+    _.get(state.recipe, "filters.category")
+  );
+
+  const filters = {
+    recipeSearch: recipeSearchFilter,
+    complexity: recipeComplexityFilter,
+    category: recipeCategoryFilter,
+  };
 
   const setSearchFilter = ({ target }) => {
     const { value } = target;
-    const query = { recipeSearch: value !== "" ? value : undefined };
+    const query = {
+      ...filters,
+      recipeSearch: value !== "" ? value : undefined,
+    };
     dispatch(recipeActions.setFilters(query));
   };
 
   const setFilter = ({ target }) => {
     const { value, name } = target;
     const query = {
-      [name]: value
-    }
+      ...filters,
+      [name]: value,
+    };
+    dispatch(recipeActions.setFilters(query));
+  };
 
-    dispatch(recipeActions.setFilters(query))
+  const resetFilters = () => {
+    const query = {
+      filters: {
+        recipeSearch: "",
+        complexity: "",
+        category: "",
+      },
+    };
+    dispatch(recipeActions.resetFilters(query));
   };
 
   const renderFilter = () => {
     return (
       <TextField
         id="outlined-search"
-        label="Search field"
+        className="dashboard-filter-search"
+        label="Поиск"
         type="search"
         variant="outlined"
+        placeholder="Название рецепта или ингредиент"
         onChange={(e) => setSearchFilter(e)}
         value={recipeSearchFilter}
       />
@@ -94,19 +122,20 @@ const Dashboard = () => {
   };
 
   const sortByComplexity = () => {
+    const complexity = recipeComplexity[recipeComplexityFilter];
     return (
-      <FormControl>
-        <InputLabel htmlFor="age-native-helper">Сложность</InputLabel>
+      <FormControl className="dashboard-sorter">
+        <InputLabel id="demo-simple-select-label">Уровень сложности</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           name="complexity"
-          value={recipeComplexity[_.get(recipeList, "complexity")]}
+          value={!_.isNil(complexity) ? complexity.value : ""}
           onChange={(e) => setFilter(e)}
         >
-          <MenuItem value="">&nbsp;</MenuItem>
-          {_.map(recipeComplexity, (item) => {
-            return <MenuItem value={item.value}>{item.name}</MenuItem>;
+          <MenuItem value="">Любой</MenuItem>
+          {_.map(recipeComplexity, (item, index) => {
+            return <MenuItem key={index} value={item.value}>{item.name}</MenuItem>;
           })}
         </Select>
       </FormControl>
@@ -114,62 +143,89 @@ const Dashboard = () => {
   };
 
   const sortByCategory = () => {
+    const category = recipeCategory[recipeCategoryFilter];
     return (
-      <FormControl>
-        <InputLabel htmlFor="age-native-helper">Сложность</InputLabel>
+      <FormControl className="dashboard-sorter">
+        <InputLabel id="demo-simple-select-label">Категория</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           name="category"
-          // renderValue={(selected) => selected.join(', ')}
-          // value={category}
-          // onChange={(e) => handleSelectCategory(e)}
+          value={!_.isNil(category) ? category.value : ""}
+          onChange={(e) => setFilter(e)}
         >
-          {_.map(recipeCategory, (item) => {
-            return (
-              <MenuItem value={item.value}>
-                {/* <Checkbox checked={recipeComplexity.indexOf(item.value) > -1} /> */}
-                <ListItemText primary={item.name} />
-              </MenuItem>
-            );
+          <MenuItem value="">Любая</MenuItem>
+          {_.map(recipeCategory, (item, index) => {
+            return <MenuItem key={index} value={item.value}>{item.name}</MenuItem>;
           })}
         </Select>
       </FormControl>
     );
   };
 
+  const renderResetFilters = () => {
+    return <Button onClick={() => resetFilters()}>Сбросить фильтры</Button>;
+  };
+
   const FormRow = ({ recipeItem }) => {
     const complexityName = recipeComplexity[recipeItem.complexity].name;
-    const ingredients = _.map(_.map(recipeItem.ingredients, 'ingredient'), 'ingredientName').join(', ');
+    const categoryName = recipeCategory[recipeItem.category].name;
+    const ingredients = _.map(
+      _.map(recipeItem.ingredients, "ingredient"),
+      "ingredientName"
+    ).join(", ");
 
     return (
       <Grid item lg={4} md={4} sm={6} xs={12}>
         <Link to={`/recipe/${recipeItem.id}`} className={classes.link}>
-          <Card className={classes.root}>
-            <CardActionArea>
+          <Card className="recipe-card">
+            <CardActionArea className={classes.card}>
               {!_.isNil(recipeItem.image) ? (
                 <CardMedia
                   component="img"
                   alt="recipe_img"
-                  image={recipeItem.image}
+                  image={recipeItem.image.src}
                   title="recipe_img"
                 />
               ) : (
-                <EmptyImg />
+                <div className="recipe-card-empty-img">
+                  <EmptyImg />
+                </div>
               )}
-              <Divider />
+              <Divider light variant="middle" />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="h2">
                   {recipeItem.name}
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
+                <Chip
+                  className="recipe-card-category"
+                  variant="outlined"
+                  label={categoryName}
+                />
+                <Typography
+                  className={classes.ingredients}
+                  gutterBottom
+                  color="textSecondary"
+                  variant="body2"
+                  component="p"
+                >
                   {ingredients}
                 </Typography>
-                <Divider />
-                <div>
-                  <FavoriteIcon /> {recipeItem.likes}
+                <Divider light variant="middle" />
+                <div className="recipe-card-bottom">
+                  <div className="recipe-card-likes">
+                    <FavoriteIcon /> &nbsp;{" "}
+                    <div className="recipe-card-complexity-name">
+                      {recipeItem.likes}
+                    </div>
+                  </div>
+                  <div className="recipe-card-complexity">
+                    Уровень:&nbsp;
+                    <div className="recipe-card-complexity-name">
+                      {complexityName}
+                    </div>
+                  </div>
                 </div>
-                <div>{complexityName}</div>
               </CardContent>
             </CardActionArea>
           </Card>
@@ -180,15 +236,21 @@ const Dashboard = () => {
 
   return (
     <div className={classes.root}>
-      <Typography align="center" variant="h4">
+      <Typography className="dashboard-title" align="center" variant="h4">
         Каталог рецептов
       </Typography>
-      {renderFilter()}
-      {sortByComplexity()}
-      {sortByCategory()}
+      <div className="dashboard-filters">
+        {renderFilter()}
+        <div className="dashboard-filters-sort">
+          {sortByComplexity()}
+          {sortByCategory()}
+        </div>
+        {renderResetFilters()}
+      </div>
+
       <Grid container spacing={3}>
         {_.map(recipeList, (item) => {
-          return <FormRow recipeItem={item} />;
+          return <FormRow key={item.id} recipeItem={item} />;
         })}
       </Grid>
     </div>

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/ru";
 import _ from "lodash";
@@ -23,6 +24,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import Button from "@material-ui/core/Button";
 
 import { ReactComponent as EmptyImg } from "assets/icons/empty-recipe-img.svg";
 
@@ -40,7 +42,11 @@ const Show = (props) => {
   }, [dispatch, currentId]);
 
   const recipe = useSelector((state) => _.get(state.recipe, "current"));
-  console.log(recipe)
+  const currentUser = useSelector((state) => _.get(state.auth, "user"));
+  
+  const handleRemove = () => {
+    dispatch(recipeActions.remove(currentId))
+  }
 
   const createdAt =
     !_.isEmpty(recipe) && moment(recipe.createdAt).format("DD MMMM YYYY");
@@ -49,45 +55,47 @@ const Show = (props) => {
   const category = !_.isEmpty(recipe) && recipeCategory[recipe.category].name;
 
   const ingredientTable = () => {
-    const mainIngredients = _.map(recipe.ingredients, (item) => {
-      const unit = !_.isEmpty(recipe) && ingredientUnit[item.unit].name;
-      return (
-        item.ingredient.ingredientName + " - " + item.ingredientAmount + unit
-      );
-    });
 
-    const alternativeIngredients = _.map(recipe.ingredients, (item) => {
-      const alternativeIngredient = item.alternativeIngredient;
+    function preparedMainIngredient(ingredientItem) {
+      const unit = ingredientUnit[ingredientItem.unit].name;
+      return (
+        ingredientItem.ingredient.ingredientName + " - " + ingredientItem.ingredientAmount + unit
+      );
+    }
+
+    function preparedAltIngredient(ingredientItem) {
+      const alternativeIngredient = ingredientItem.alternativeIngredient;
 
       if (!_.isEmpty(alternativeIngredient) && !_.isNil(alternativeIngredient)) {
         const unitInteger = _.get(alternativeIngredient, 'unit');
         const unit = _.get(_.get(ingredientUnit, `${unitInteger}`), 'name');
   
         return (
-          _.get(alternativeIngredient, 'altIngredient.ingredientName') +
+          _.get(alternativeIngredient, 'ingredientName') +
           " - " +
-          _.get(alternativeIngredient, 'ingredientAmount') +
+          _.get(alternativeIngredient, 'ingredientAmount') + 
           unit
         );
       } else {
         return "";
       }
-
-    });
+    }
 
     function createData(mainIngredients, alternativeIngredients) {
       return { mainIngredients, alternativeIngredients };
     }
 
-    const rows = [createData(mainIngredients, alternativeIngredients)];
+    const rows = _.map(recipe.ingredients, ingredient => {
+      return createData(preparedMainIngredient(ingredient), preparedAltIngredient(ingredient))
+    });
 
     return (
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Ингредиенты</TableCell>
-              <TableCell align="right">Альтернативные ингредиенты</TableCell>
+              <TableCell className="recipe-table-header">Ингредиенты</TableCell>
+              <TableCell className="recipe-table-header" align="right">Альтернативные ингредиенты</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -112,8 +120,22 @@ const Show = (props) => {
       <Card variant="outlined" className="recipe-card">
         <CardContent className="recipe-card-content">
           <div className="recipe-header">
-            <div className="recipe-name">{recipe.name}</div>
+            <div className="recipe-header-right">
+              <div className="recipe-name">{recipe.name}</div>
+              <div className="recipe-author-name">{_.get(recipe, 'author.userName')}</div>
+            </div>
             <div className="recipe-info">
+              {currentUser && currentUser.id === recipe.authorId && (
+                <div className="recipe-actions">
+                  <Link to={`/recipe/${recipe.id}/edit`} className="recipe-edit-button">
+                    Редактировать
+                  </Link>
+                  <Button onClick={() => handleRemove()} className="recipe-edit-button">
+                    Удалить
+                  </Button>
+                </div>
+              )}
+              
               <div className="recipe-category">{category}</div>
               <Divider />
               <div className="recipe-date">{createdAt}</div>
@@ -123,7 +145,7 @@ const Show = (props) => {
           <div className="recipe-description">
             <div className="recipe-image">
               {!_.isNil(recipe.image) ? (
-                <img className="recipe-item-image" src={recipe.image} alt="" />
+                <img className="recipe-item-image" src={recipe.image.src} alt="" />
               ) : (
                 <EmptyImg />
               )}
@@ -135,7 +157,7 @@ const Show = (props) => {
               <div className="recipe-description-main">
                 <div className="recipe-description-item">
                   <div className="recipe-description-item-name">
-                    Сложность приготовления:
+                    Уровень сложности приготовления:
                   </div>
                   <div className="recipe-description-item-desc">
                     {complexity}

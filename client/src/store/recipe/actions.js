@@ -23,6 +23,7 @@ const actions = {
 
   SET_PAGE: DOCUMENT + "SET_PAGE",
   SET_FILTERS: DOCUMENT + "SET_FILTERS",
+  RESET_FILTERS: DOCUMENT + "RESET_FILTERS",
 
   CHANGE_FIELD: DOCUMENT + "CHANGE_FIELD",
   
@@ -32,9 +33,10 @@ const actions = {
 
   CHANGE_ALT_INGREDIENT: DOCUMENT + "CHANGE_ALT_INGREDIENT",
 
-  get: () => {
-    return { type: actions.GET };
-  },
+  get: (data) => ({
+    type: actions.GET,
+    payload: data,
+  }),
 
   getSuccess: (data) => ({
     type: actions.GET_SUCCESS,
@@ -91,9 +93,10 @@ const actions = {
     payload: error,
   }),
 
-  remove: () => {
-    return { type: actions.REMOVE };
-  },
+  remove: (id) => ({
+    type: actions.REMOVE,
+    payload: id,
+  }),
 
   removeSuccess: (data) => ({
     type: actions.REMOVE_SUCCESS,
@@ -107,6 +110,10 @@ const actions = {
 
   setFilters: (filters) => ({
     type: actions.SET_FILTERS,
+    payload: filters,
+  }),
+  resetFilters: (filters) => ({
+    type: actions.RESET_FILTERS,
     payload: filters,
   }),
 
