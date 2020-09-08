@@ -25,18 +25,6 @@ module.exports = function (app) {
         notEmpty: {
           msg: 'recipeIngredientIdNotNull'
         },
-        // isExist: async id => {
-        //   await recipe_ingredient.findOne({ where: { id } })
-        //     .then(res => {
-        //       if (!res) {
-        //         throw new Error('recipeIngredientIdNotFound');
-        //       } else {
-        //         if (res.dataValues && res.dataValues.isDeleted) {
-        //           throw new Error('recipeIngredientIdIsDeleted');
-        //         }
-        //       }
-        //     });
-        // }
       }
     },
     ingredientId: {
@@ -51,18 +39,6 @@ module.exports = function (app) {
         notEmpty: {
           msg: 'ingredientIdNotNull'
         },
-        // isExist: async id => {
-        //   await ingredient.findOne({ where: { id } })
-        //     .then(res => {
-        //       if (!res) {
-        //         throw new Error('ingredientIdNotFound');
-        //       } else {
-        //         if (res.dataValues && res.dataValues.isDeleted) {
-        //           throw new Error('ingredientIdIsDeleted');
-        //         }
-        //       }
-        //     });
-        // }
       }
     },
     ingredientAmount: {

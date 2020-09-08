@@ -43,7 +43,7 @@ const TopBar = () => {
           ) : (
             <>
               <div className="topbar-menu-right">
-              <Link to={`/recipe/create`} className="recipe-create-button">
+              <Link to={`/recipe-create`} className="recipe-create-button">
                 Добавить рецепт
               </Link>
               <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
@@ -62,7 +62,7 @@ const TopBar = () => {
                   {currentUser.userName}
                 </MenuItem>
                 <MenuItem onClick={handleClose}>
-                  <Link to={`/recipe/user`} className="topbar-menu-button">
+                  <Link to={`/recipe-user`} className="topbar-menu-button">
                     Мои рецепты
                   </Link>
                 </MenuItem>

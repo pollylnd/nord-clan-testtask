@@ -77,7 +77,7 @@ const Show = (props) => {
     function preparedMainIngredient(ingredientItem) {
       const unit = ingredientUnit[ingredientItem.unit].name;
       return (
-        ingredientItem.ingredient.ingredientName + " - " + ingredientItem.ingredientAmount + unit
+        `${_.get(ingredientItem.ingredient, 'ingredientName')} - ${_.get(ingredientItem, 'ingredientAmount')} ${unit}`
       );
     }
 
@@ -89,10 +89,7 @@ const Show = (props) => {
         const unit = _.get(_.get(ingredientUnit, `${unitInteger}`), 'name');
   
         return (
-          _.get(alternativeIngredient, 'ingredientName') +
-          " - " +
-          _.get(alternativeIngredient, 'ingredientAmount') + 
-          unit
+          `${_.get(alternativeIngredient, 'ingredientName')} - ${_.get(alternativeIngredient, 'ingredientAmount')} ${unit}`
         );
       } else {
         return "";

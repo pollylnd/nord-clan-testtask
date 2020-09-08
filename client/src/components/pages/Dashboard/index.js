@@ -39,12 +39,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  card: {
-    height: 420,
-  },
-  ingredients: {
-    height: 50,
-  },
 }));
 
 const Dashboard = (props) => {

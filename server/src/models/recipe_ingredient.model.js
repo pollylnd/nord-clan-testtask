@@ -5,7 +5,7 @@ const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
-  const { ingredient, recipe } = sequelizeClient.models;
+  const { recipe } = sequelizeClient.models;
   const recipe_ingredient = sequelizeClient.define('recipe_ingredient', {
     id: {
       type: DataTypes.UUID,
@@ -51,18 +51,6 @@ module.exports = function (app) {
         notEmpty: {
           msg: 'ingredientIdNotNull'
         },
-        // isExist: async id => {
-        //   await ingredient.findOne({ where: { id } })
-        //     .then(res => {
-        //       if (!res) {
-        //         throw new Error('ingredientIdNotFound');
-        //       } else {
-        //         if (res.dataValues && res.dataValues.isDeleted) {
-        //           throw new Error('ingredientIdIsDeleted');
-        //         }
-        //       }
-        //     });
-        // }
       }
     },
     ingredientAmount: {

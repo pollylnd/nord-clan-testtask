@@ -177,7 +177,13 @@ const Edit = (props) => {
     const isValidStages = validateStages();
 
     for (let field in formData) {
-      if (!formData[field] && _.includes(mapValidationSimpleFields, field)) {
+      if (!_.includes(mapValidationSimpleFields, field)) {
+        continue;
+      }
+
+      const stringValue = formData[field].toString();
+
+      if ((_.isNil(stringValue) || _.isEmpty(stringValue))) {
         notValidFields.push(field);
         setErrorFields((prev) => [...prev, field]);
       }
@@ -271,6 +277,7 @@ const Edit = (props) => {
               variant="outlined"
               placeholder="Кол-во"
               type="number"
+              inputProps={{ min: "0" }}
               onChange={(e) => handleChangeIngredient(e, index)}
             />
             <FormControl required>
