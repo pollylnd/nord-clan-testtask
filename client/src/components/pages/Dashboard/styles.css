@@ -1,0 +1,79 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.MuiTypography-h4.dashboard-title {
+  margin: 20px;
+  /* color: #71605a; */
+}
+
+.dashboard-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.dashboard-filters-sort {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.MuiFormControl-root.dashboard-sorter {
+  min-width: 200px;
+  margin-right: 20px;
+}
+
+.MuiFormControl-root.dashboard-filter-search {
+  min-width: 350px;
+}
+
+.recipe-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.MuiChip-outlined.recipe-card-category {
+  border: 1px solid #16612c;
+  margin-bottom: 20px;
+}
+
+.recipe-card-likes {
+  color: #16612c;
+  display: flex;
+  align-items: center;
+}
+
+.recipe-card-complexity {
+  display: flex;
+  align-items: center;
+}
+
+.recipe-card-likes-data, .recipe-card-complexity-name {
+  color: #16612c;
+  font-weight: 600;
+}
+
+.recipe-card-empty-img {
+  text-align: center;
+}
+
+.recipe-card .MuiCardMedia-media {
+  height: 200px;
+}
+
+.dashboard-nothing-found {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
+
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
