@@ -63,7 +63,6 @@ const Create = () => {
         }
       }
     }
-
     return false;
   };
 
@@ -194,7 +193,6 @@ const Create = () => {
   };
 
   const stageForm = () => {
-    console.log(errorFields)
     return _.map(new Array(countStages), (v, i) => {
       if (!recipe.stages) {
         return false;
@@ -385,7 +383,6 @@ const Create = () => {
                             <ClearIcon />
                           </Button>
                         </div>
-                        
                       </div>
                     )}
                   </section>

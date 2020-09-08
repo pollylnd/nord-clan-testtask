@@ -24,7 +24,6 @@ module.exports = function (app) {
     blobService({Model: blobStorage})
   );
 
-  // console.log(app)
   // Get our initialized service so that we can register hooks and filters
   const service = app.service('uploads');
 

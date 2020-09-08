@@ -71,7 +71,6 @@ const TopBar = () => {
                     Выход
                   </Button>
                 </MenuItem>
-                {/* <MenuItem onClick={handleClose}>Logout</MenuItem> */}
               </Menu>
               </div>
             </>

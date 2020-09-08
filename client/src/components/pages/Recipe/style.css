@@ -102,7 +102,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  border: 2px solid red;
+  border: 1px solid red;
   padding: 5px;
   border-radius: 4px;
 }

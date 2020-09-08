@@ -111,8 +111,6 @@ function* setLike(action) {
 function* remove(action) {
   try {
     const id = action.payload
-    console.log(action)
-
     const deleteRecipe = yield backend.service("recipe").remove(id)
 
     if(_.size(deleteRecipe)) {

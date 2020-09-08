@@ -20,6 +20,7 @@ const initState = {
   },
   edit: {},
   errorMessage: "",
+  isGetFetching: false,
 };
 
 export default function reducer(state = initState, { type, payload }) {
@@ -27,6 +28,7 @@ export default function reducer(state = initState, { type, payload }) {
     case actions.GET:
       return {
         ...state,
+        isGetFetching: true,
         errorMessage: "",
       };
 
@@ -35,11 +37,13 @@ export default function reducer(state = initState, { type, payload }) {
         ...state,
         list: payload.data,
         errorMessage: "",
+        isGetFetching: false,
       };
 
     case actions.GET_FAILURE:
       return {
         ...state,
+        isGetFetching: false,
         errorMessage: "Error",
       };
 
@@ -49,6 +53,7 @@ export default function reducer(state = initState, { type, payload }) {
         current: {
           ...initState.current,
         },
+        isGetFetching: true,
         errorMessage: "",
       };
 
@@ -63,12 +68,14 @@ export default function reducer(state = initState, { type, payload }) {
           ...state.edit,
           ...payload 
         },
+        isGetFetching: false,
         errorMessage: "",
       };
 
     case actions.GET_ID_FAILURE:
       return {
         ...state,
+        isGetFetching: false,
         errorMessage: "Error",
       };
 

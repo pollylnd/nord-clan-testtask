@@ -43,6 +43,40 @@ const Edit = (props) => {
 
   const [countIngredients, setCountIngredients] = useState(null);
   const [countStages, setCountStages] = useState(null);
+  const [errorFields, setErrorFields] = useState([]);
+
+  const mapValidationSimpleFields = ["name", "complexity", "category"];
+
+  const validateIngredients = () => {
+    if (countIngredients > 0 && !_.isNil(recipe.ingredients)) {
+      for (const ingredient of recipe.ingredients) {
+        if (
+          (_.isNil(ingredient['ingredient.ingredientName']) 
+          ? ingredient.ingredient.ingredientName 
+          : ingredient['ingredient.ingredientName']) &&
+          ingredient.ingredientAmount &&
+          ingredient.unit
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const validateStages = () => {
+    if (countStages > 0 && !_.isNil(recipe.stages)) {
+      for (const stages of recipe.stages) {
+        if (
+          stages.description
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
 
   const handleChange = (e) => {
     const value = _.get(e.target, "value");
@@ -106,6 +140,7 @@ const Edit = (props) => {
 
   const handleAddStage = () => {
     const newStageIndex = countStages + 1;
+
     dispatch(recipeActions.addFieldMultiple("edit", "stages", countStages));
     dispatch(recipeActions.changeFieldMultiple("edit", "stages", countStages, countStages, 'index'))
     setCountStages(newStageIndex);
@@ -137,7 +172,31 @@ const Edit = (props) => {
 
   const handleEdit = () => {
     const formData = recipe;
-    dispatch(recipeActions.update(formData));
+    const notValidFields = [];
+    const isValidIngredients = validateIngredients();
+    const isValidStages = validateStages();
+
+    for (let field in formData) {
+      if (!formData[field] && _.includes(mapValidationSimpleFields, field)) {
+        notValidFields.push(field);
+        setErrorFields((prev) => [...prev, field]);
+      }
+    }
+
+    if (!isValidIngredients) {
+      notValidFields.push("ingredients");
+      setErrorFields((prev) => [...prev, "ingredients"]);
+    }
+
+    if (!isValidStages) {
+      notValidFields.push("stages");
+      setErrorFields((prev) => [...prev, "stages"]);
+    }
+
+    if (_.isEmpty(notValidFields)) {
+      dispatch(recipeActions.update(formData));
+    }
+   
   };
 
   const complexity = !_.isEmpty(recipe) && recipeComplexity[recipe.complexity];
@@ -157,6 +216,11 @@ const Edit = (props) => {
           <FormControl fullWidth>
             <TextField
               id="outlined-name"
+              error={
+                _.includes(errorFields, "stages") && _.isEmpty(stageItem.description)
+                  ? true
+                  : false
+              }
               value={_.get(stageItem, "description")}
               rows={4}
               name="description"
@@ -181,7 +245,15 @@ const Edit = (props) => {
       const ingredientItem = recipe.ingredients[index];
       return (
         <CardContent className="recipe-ingredient-form">
-          <div className="ingredient-forms">
+          <div className={_.includes(errorFields, "ingredients") &&
+          ( _.isNil(ingredientItem.ingredient.ingredientName) ||
+            (!_.isNil(ingredientItem['ingredient.ingredientName']) ||
+            _.isEmpty(ingredientItem['ingredient.ingredientName'])) ||
+            _.isNil(ingredientItem.ingredientAmount) ||
+            _.isNil(ingredientItem.unit))
+              ? "ingredient-forms-error"
+              : "ingredient-forms"}
+          >
             <TextField
               id="outlined-name"
               className="recipe-ingredient-name"
@@ -227,7 +299,6 @@ const Edit = (props) => {
 
   const altIngredientForm = (ingredient, index) => {
     const alternativeIngredient = _.get(ingredient, 'alternativeIngredient', null);
-
     return (
       <>
         <TextField
@@ -276,11 +347,18 @@ const Edit = (props) => {
       </Typography>
       <Card>
         <CardContent>
+          
           <div className="recipe-form">
             <FormControl fullWidth>
               Название
               <TextField
                 id="outlined-name"
+                error={
+                  _.includes(errorFields, "name") &&
+                  _.isEmpty(_.get(recipe, "name"))
+                    ? true
+                    : false
+                }
                 name="name"
                 value={_.get(recipe, "name")}
                 variant="outlined"
@@ -304,8 +382,7 @@ const Edit = (props) => {
                         Загрузите изображение
                       </Button>
                     </div>
-                    {
-                      !_.isNil(recipe.image) && (
+                    {!_.isNil(recipe.image) && (
                         <div className="recipe-image">
                           <span className="recipe-image-name">{recipe.image.name}</span>
                           <div className="recipe-image-content">
@@ -314,13 +391,10 @@ const Edit = (props) => {
                               <ClearIcon />
                             </Button>
                           </div>
-                          
                         </div>
-                      )
-                    }
+                      )}
                   </section>
                 )}
-                
               </Dropzone>
             </div>
 
@@ -342,7 +416,16 @@ const Edit = (props) => {
               <Box width="45%">
                 <Card>
                   <CardContent>
-                    <FormControl fullWidth required>
+                    <FormControl 
+                      fullWidth 
+                      required
+                      error={
+                        _.includes(errorFields, "complexity") &&
+                        _.isNil(_.get(recipe, "complexity"))
+                          ? true
+                          : false
+                      }
+                    >
                       <InputLabel id="demo-simple-select-label">
                         Сложность
                       </InputLabel>
@@ -367,10 +450,20 @@ const Edit = (props) => {
                   </CardContent>
                 </Card>
               </Box>
+
               <Box width="45%">
                 <Card>
                   <CardContent>
-                    <FormControl fullWidth required>
+                    <FormControl 
+                      fullWidth 
+                      required
+                      error={
+                        _.includes(errorFields, "category") &&
+                        _.isNil(_.get(recipe, "category"))
+                          ? true
+                          : false
+                      }
+                    >
                       <InputLabel id="demo-simple-select-label">
                         Категория
                       </InputLabel>
@@ -390,18 +483,19 @@ const Edit = (props) => {
                         })}
                       </Select>
                       )}
-                      
                     </FormControl>
                   </CardContent>
                 </Card>
               </Box>
             </div>
+
             <>
               <Button onClick={() => handleAddIngredient()}>
                 + Добавить ингредиент
               </Button>
               <Card>{ingredientForm()}</Card>
             </>
+
             <div className="recipe-form-stages">
               <Button onClick={() => handleAddStage()}>+ Добавить шаг</Button>
               <Card>{stageForm()}</Card>
@@ -409,6 +503,7 @@ const Edit = (props) => {
           </div>
         </CardContent>
       </Card>
+
       <Button className="recipe-create-button" onClick={() => handleEdit()}>Опубликовать</Button>
     </div>
   );

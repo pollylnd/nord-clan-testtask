@@ -124,6 +124,7 @@ module.exports = {
           hook.result = {
             data: resultWithImages,
           };
+          
         } catch (error) {
           console.log(error);
         }
@@ -367,9 +368,6 @@ module.exports = {
 
         return hook;
       },
-      // async (hook) => {
-      //   return hook;
-      // },
     ],
     remove: [],
   },

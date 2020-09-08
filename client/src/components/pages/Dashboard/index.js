@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Loader from 'react-loader-spinner'
 
 import _ from "lodash";
 
@@ -23,12 +24,13 @@ import Select from "@material-ui/core/Select";
 import Button from "@material-ui/core/Button";
 import InputLabel from "@material-ui/core/InputLabel";
 import Chip from "@material-ui/core/Chip";
+import TextField from "@material-ui/core/TextField";
 
 import { ReactComponent as EmptyImg } from "assets/icons/empty-recipe-img.svg";
 import { ReactComponent as NothingFound } from "assets/ne_res.svg";
 
 import "./styles.css";
-import { TextField } from "@material-ui/core";
+
 
 const useStyles = makeStyles((theme) => ({
   link: {
@@ -62,6 +64,7 @@ const Dashboard = (props) => {
   }, [dispatch, props.authorId]);
 
   const recipeList = useSelector((state) => _.get(state.recipe, "list"));
+  const isGetFetching = useSelector((state) => _.get(state.recipe, "isGetFetching"));
 
   const recipeSearchFilter = useSelector((state) =>
     _.get(state.recipe, "filters.recipeSearch")
@@ -225,7 +228,7 @@ const Dashboard = (props) => {
                 <div className="recipe-card-bottom">
                   <div className="recipe-card-likes">
                     <FavoriteIcon /> &nbsp;{" "}
-                    <div className="recipe-card-complexity-name">
+                    <div className="recipe-card-likes-data">
                       {_.isNil(recipeItem.likes) ? 0 : recipeItem.likes}
                     </div>
                   </div>
@@ -249,6 +252,7 @@ const Dashboard = (props) => {
       <Typography className="dashboard-title" align="center" variant="h4">
         {_.isNil(props.authorId) ? "Каталог рецептов" : "Мои рецепты"}
       </Typography>
+      
       <div className="dashboard-filters">
         {renderFilter()}
         <div className="dashboard-filters-sort">
@@ -257,17 +261,29 @@ const Dashboard = (props) => {
         </div>
         {renderResetFilters()}
       </div>
-      {!_.isEmpty(recipeList) ? (
-        <Grid container spacing={3}>
-          {_.map(recipeList, (item) => {
-            return <FormRow key={item.id} recipeItem={item} />;
-          })}
-        </Grid>
-      ) : (
-        <div className="dashboard-nothing-found">
-          <NothingFound />
+      {isGetFetching ? (
+        <div className="dashboard-loading">
+          <Loader
+            type="Oval"
+            color="#16612c"
+            height={150}
+            width={150}
+          />
         </div>
-      )}
+        
+      ) : (
+        !_.isEmpty(recipeList) ? (
+          <Grid container spacing={3}>
+            {_.map(recipeList, (item) => {
+              return <FormRow key={item.id} recipeItem={item} />;
+            })}
+          </Grid>
+        ) : (
+          <div className="dashboard-nothing-found">
+            <NothingFound />
+          </div>
+        ))}
+      
     </div>
   );
 };

@@ -37,8 +37,6 @@ module.exports = {
           attributes: ["recipeId"],
         }).then((result) => JSON.parse(JSON.stringify(result)));
 
-        
-
         hook.result = {
           ...hook.result,
           recipeLikes: _.map(recipeLikes, 'recipeId')

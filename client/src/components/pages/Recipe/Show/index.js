@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Loader from 'react-loader-spinner'
 import moment from "moment";
 import "moment/locale/ru";
 import _ from "lodash";
@@ -46,6 +47,7 @@ const Show = (props) => {
 
   const recipe = useSelector((state) => _.get(state.recipe, "current"));
   const currentUser = useSelector((state) => _.get(state.auth, "user"));
+  const isGetFetching = useSelector((state) => _.get(state.recipe, "isGetFetching"));
 
   let isLiked = false
 
@@ -53,10 +55,6 @@ const Show = (props) => {
     isLiked = true
   } 
   
-  const handleRemove = () => {
-    dispatch(recipeActions.remove(currentId))
-  }
-
   const handleLike = () => {
     dispatch(recipeActions.setLike({
       recipeId: recipe.id,
@@ -67,15 +65,15 @@ const Show = (props) => {
     }))
   }
 
+  const handleRemove = () => {
+    dispatch(recipeActions.remove(currentId))
+  }
 
-  const createdAt =
-    !_.isEmpty(recipe) && moment(recipe.createdAt).format("DD MMMM YYYY");
-  const complexity =
-    !_.isEmpty(recipe) && recipeComplexity[recipe.complexity].name;
+  const createdAt = !_.isEmpty(recipe) && moment(recipe.createdAt).format("DD MMMM YYYY");
+  const complexity = !_.isEmpty(recipe) && recipeComplexity[recipe.complexity].name;
   const category = !_.isEmpty(recipe) && recipeCategory[recipe.category].name;
 
   const ingredientTable = () => {
-
     function preparedMainIngredient(ingredientItem) {
       const unit = ingredientUnit[ingredientItem.unit].name;
       return (
@@ -135,104 +133,111 @@ const Show = (props) => {
     );
   };
 
-  return (
-    <div className="recipe-container">
-      <Card variant="outlined" className="recipe-card">
-        <CardContent className="recipe-card-content">
-          <div className="recipe-header">
-            <div className="recipe-header-right">
-              <div className="recipe-name">{recipe.name}</div>
-              <div className="recipe-author-name"> Автор: {_.get(recipe, 'author.userName')}</div>
-            </div>
-            <div className="recipe-info">
-              {currentUser && currentUser.id === recipe.authorId && (
-                <div className="recipe-actions">
-                  <Link to={`/recipe/${recipe.id}/edit`} className="recipe-edit-button">
-                    Редактировать
-                  </Link>
-                  <Button onClick={() => handleRemove()} className="recipe-edit-button">
-                    Удалить
-                  </Button>
-                </div>
-              )}
-              
-              <div className="recipe-category">{category}</div>
-              <Divider />
-              <div className="recipe-date">{createdAt}</div>
-            </div>
-          </div>
-          <Divider />
-          <div className="recipe-description">
-            <div className="recipe-description-main">
-              <div className="recipe-image-show">
-                {!_.isNil(recipe.image) ? (
-                  <img className="recipe-item-image" src={recipe.image.src} alt="" />
-                ) : (
-                  <EmptyImg />
+  return isGetFetching ? (
+      <div className="recipe-loading">
+        <Loader
+          type="Oval"
+          color="#16612c"
+          height={150}
+          width={150}
+        />
+      </div>
+    ) : (
+      <div className="recipe-container">
+        <Card variant="outlined" className="recipe-card">
+          <CardContent className="recipe-card-content">
+            <div className="recipe-header">
+              <div className="recipe-header-right">
+                <div className="recipe-name">{recipe.name}</div>
+                <div className="recipe-author-name"> Автор: {_.get(recipe, 'author.userName')}</div>
+              </div>
+              <div className="recipe-info">
+                {currentUser && currentUser.id === recipe.authorId && (
+                  <div className="recipe-actions">
+                    <Link to={`/recipe/${recipe.id}/edit`} className="recipe-edit-button">
+                      Редактировать
+                    </Link>
+                    <Button onClick={() => handleRemove()}>
+                      Удалить
+                    </Button>
+                  </div>
                 )}
+                <div className="recipe-category">{category}</div>
+                <Divider />
+                <div className="recipe-date">{createdAt}</div>
               </div>
-              <div className="recipe-description-right">
-                <div className="recipe-description-item">
-                  <div className="recipe-description-item-name">
-                    Уровень сложности приготовления:
+            </div>
+            <Divider />
+            <div className="recipe-description">
+              <div className="recipe-description-main">
+                  {!_.isNil(recipe.image) ? (
+                    <div className="recipe-image-show">
+                      <img className="recipe-item-image" src={recipe.image.src} alt="" />
+                    </div>
+                  ) : (
+                    <EmptyImg />
+                  )}
+                <div className="recipe-description-right">
+                  <div className="recipe-description-item">
+                    <div className="recipe-description-item-name">
+                      Уровень сложности приготовления:
+                    </div>
+                    <div className="recipe-description-item-desc">
+                      {complexity}
+                    </div>
                   </div>
-                  <div className="recipe-description-item-desc">
-                    {complexity}
+                  <Divider />
+                  <div className="recipe-description-item">
+                    <div className="recipe-description-item-name">
+                      {(!_.isNil(currentUser) && currentUser.id !== recipe.authorId) ? (
+                        <div onClick={() => !isLiked && handleLike()}>
+                          {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}&nbsp;
+                          {_.isNil(recipe.likes) ? 0 : recipe.likes}
+                        </div>
+                      ) : (
+                        <>
+                          <FavoriteIcon /> &nbsp;
+                          {_.isNil(recipe.likes) ? 0 : recipe.likes}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <Divider />
+                  <div className="recipe-description-info ">
+                    <div className="recipe-description-text col-md-8">
+                      {recipe.description}
+                    </div>
                   </div>
                 </div>
-                <Divider />
-                <div className="recipe-description-item">
-                  <div className="recipe-description-item-name">
-                    {(!_.isNil(currentUser) && currentUser.id !== recipe.authorId) ? (
-                      <div onClick={() => !isLiked && handleLike()}>
-                        {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}&nbsp;
-                        {_.isNil(recipe.likes) ? 0 : recipe.likes}
+              </div>
+            </div>
+            <div className="recipe-ingredients">{ingredientTable()}</div>
+            <Divider />
+            <div className="recipe-steps">
+              <div className="recipe-item-title">
+                Пошаговый рецепт приготовления
+              </div>
+              {_.map(recipe.stages, (stage) => {
+                return (
+                  <Card  className="recipe-stages-card">
+                    <CardContent className="recipe-stages-card-content">
+                    <div className="recipe-steps-item">
+                      <div className="recipe-steps-item-index">
+                        Шаг {stage.index + 1}
                       </div>
-                    ) : (
-                      <>
-                        <FavoriteIcon /> &nbsp;
-                        {_.isNil(recipe.likes) ? 0 : recipe.likes}
-                      </>
-                    )}
-                    
-                  </div>
-                </div>
-                <Divider />
-                <div className="recipe-description-info ">
-                  <div className="recipe-description-text col-md-8">
-                    {recipe.description}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="recipe-ingredients">{ingredientTable()}</div>
-          <Divider />
-          <div className="recipe-steps">
-            <div className="recipe-item-title">
-              ПОШАГОВЫЙ РЕЦЕПТ ПРИГОТОВЛЕНИЯ
-            </div>
-            {_.map(recipe.stages, (stage) => {
-              return (
-                <Card  className="recipe-stages-card">
-                  <CardContent className="recipe-stages-card-content">
-                  <div className="recipe-steps-item">
-                    <div className="recipe-steps-item-index">
-                      Шаг {stage.index + 1}
+                      <div className="recipe-steps-item-desc">
+                        {stage.description}
+                      </div>
                     </div>
-                    <div className="recipe-steps-item-desc">
-                      {stage.description}
-                    </div>
-                  </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
 };
 
 export default Show;

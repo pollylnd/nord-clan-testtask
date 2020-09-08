@@ -52,7 +52,7 @@
   align-items: center;
 }
 
-.recipe-card-complexity-name {
+.recipe-card-likes-data, .recipe-card-complexity-name {
   color: #16612c;
   font-weight: 600;
 }
@@ -72,3 +72,8 @@
   margin: 20px;
 }
 
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}

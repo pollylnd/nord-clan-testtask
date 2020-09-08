@@ -165,3 +165,9 @@
 .recipe-stages-card-content.MuiCardContent-root:last-child {
   padding-bottom: 10px;
 }
+
+.recipe-loading {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
