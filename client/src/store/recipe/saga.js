@@ -97,6 +97,17 @@ function* update(action) {
   }
 }
 
+function* setLike(action) {
+  const recipeLikesData = action.payload
+  try {
+    const likedRecipe = yield backend.service("recipe_likes").create(recipeLikesData);
+    yield put(actions.setLikeSuccess(likedRecipe));
+  } catch (e) {
+    console.log(e);
+    yield put(actions.setLikeFailure(e));
+  }
+}
+
 function* remove(action) {
   try {
     const id = action.payload
@@ -123,7 +134,8 @@ function* recipeSaga() {
     takeEvery(actions.UPDATE, update),
     takeEvery(actions.SET_FILTERS, get),
     takeEvery(actions.RESET_FILTERS, get),
-    takeEvery(actions.REMOVE, remove)
+    takeEvery(actions.REMOVE, remove),
+    takeEvery(actions.SET_LIKE, setLike)
   ]);
 }
 

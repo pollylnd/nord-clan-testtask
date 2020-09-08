@@ -1,23 +1,28 @@
 export const recipeComplexity = [
   {
     name: 'Очень простой',
-    value: 0
+    value: 0,
+    color: '#00b300'
   },
   {
     name: 'Простой',
-    value: 1
+    value: 1,
+    color: '#006633'
   },
   {
     name: 'Средний',
-    value: 2
+    value: 2,
+    color: '#ffcc00'
   },
   {
     name: 'Сложный',
-    value: 3
+    value: 3,
+    color: '#cc0404'
   },
   {
     name: 'Очень сложный',
-    value: 4
+    value: 4,
+    color: '#3d0099'
   },
 ]
 

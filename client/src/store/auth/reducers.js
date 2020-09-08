@@ -61,6 +61,20 @@ export default function reducer(state = initState, { type, payload }) {
       };
     }
 
+    case actions.SET_LIKE: {
+      const newRecipeLike = payload
+      const oldRecipeLikes = state.user.recipeLikes.slice(0, state.user.recipeLikes.length)
+      oldRecipeLikes.push(payload)
+
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          recipeLikes: oldRecipeLikes
+        }
+      };
+    }
+
     case actions.CHANGE_FIELD:
       const {
         type,

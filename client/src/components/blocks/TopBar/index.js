@@ -58,13 +58,16 @@ const TopBar = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
+                <MenuItem disabled>
+                  {currentUser.userName}
+                </MenuItem>
                 <MenuItem onClick={handleClose}>
-                  <Link to={`/recipe/user`} className="recipe-create-button">
+                  <Link to={`/recipe/user`} className="topbar-menu-button">
                     Мои рецепты
                   </Link>
                 </MenuItem>
                 <MenuItem onClick={handleClose}>
-                  <Button onClick={() => dispatch(authActions.signOut())}>
+                  <Button className="topbar-menu-button" onClick={() => dispatch(authActions.signOut())}>
                     Выход
                   </Button>
                 </MenuItem>

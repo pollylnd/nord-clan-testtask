@@ -21,7 +21,6 @@ const actions = {
   REMOVE_SUCCESS: DOCUMENT + "REMOVE_SUCCESS",
   REMOVE_FAILURE: DOCUMENT + "REMOVE_FAILURE",
 
-  SET_PAGE: DOCUMENT + "SET_PAGE",
   SET_FILTERS: DOCUMENT + "SET_FILTERS",
   RESET_FILTERS: DOCUMENT + "RESET_FILTERS",
 
@@ -32,6 +31,10 @@ const actions = {
   REMOVE_FIELD_MULTIPLE: DOCUMENT + "REMOVE_FIELD_MULTIPLE",
 
   CHANGE_ALT_INGREDIENT: DOCUMENT + "CHANGE_ALT_INGREDIENT",
+
+  SET_LIKE: DOCUMENT + "SET_LIKE",
+  SET_LIKE_SUCCESS: DOCUMENT + "SET_LIKE_SUCCESS",
+  SET_LIKE_FAILURE: DOCUMENT + "SET_LIKE_FAILURE",
 
   get: (data) => ({
     type: actions.GET,
@@ -117,9 +120,17 @@ const actions = {
     payload: filters,
   }),
 
-  setPage: (page) => ({
-    type: actions.SET_PAGE,
-    payload: page,
+  setLike: (data) => ({
+    type: actions.SET_LIKE,
+    payload: data,
+  }),
+  setLikeSuccess: (data) => ({
+    type: actions.SET_LIKE_SUCCESS,
+    payload: data,
+  }),
+  setLikeFailure: (data) => ({
+    type: actions.SET_LIKE_FAILURE,
+    payload: data,
   }),
 
   changeField: (type, key, value) => ({

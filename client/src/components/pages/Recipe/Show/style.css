@@ -11,7 +11,11 @@
   font-size: 25px;
   color: #424242;
   font-weight: 600;
-  padding: 30px;
+  padding: 5px 30px 30px 30px;
+}
+
+.recipe-actions {
+  margin-bottom: 5px;
 }
 
 .recipe-header-right {
@@ -43,25 +47,26 @@
 
 .recipe-description-info {
   padding: 15px;
-  display: flex;
+  color: #424242;
+  text-align: end;
 }
 
-.recipe-description-text {
-  width: 80%;
-  text-align: start;
-  color: #424242;
-}
 
 .recipe-description-main {
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
+}
+
+.recipe-description-right {
+  display: flex;
+  flex-direction: column;
   margin-left: 30px;
   align-items: flex-end;
 }
 
 .recipe-description-item {
   text-align: end;
+  margin-bottom: 15px;
 }
 
 .recipe-description-item-name {
@@ -81,7 +86,7 @@
   font-weight: 600;
   margin: 15px;
   text-align: start;
-  margin-bottom: 0px;
+  margin-bottom: 25px;
 }
 
 .recipe-steps {
@@ -94,7 +99,7 @@
 }
 
 .recipe-steps-item-index {
-  width: 35%;
+  margin-right: 20px;
   color: #424242;
   font-size: 20px;
   font-weight: 600;
@@ -114,6 +119,7 @@
 .recipe-ingredients {
   display: flex;
   justify-content: space-between;
+  margin-top: 15px;
 }
 
 .recipe-edit-button {
@@ -124,13 +130,38 @@
   color: #ffffff;
   text-decoration: none;
   border-radius: 4px;
+  margin-right: 10px;
 }
 
 .MuiTableCell-root.recipe-table-header {
   font-size: 17px;
-  /* */
 }
 
 .MuiTableRow-head {
   background-color:  #fbf3eb;
+}
+
+.recipe-author-name {
+  color: #424242;
+  padding-left: 15px;
+}
+
+.recipe-image-show {
+  height: 450px;
+}
+
+.recipe-image-show .recipe-item-image {
+  height: inherit;
+}
+
+.recipe-stages-card {
+  margin-bottom: 5px;
+}
+
+.recipe-stages-card-content.MuiCardContent-root {
+  padding: 5px;
+}
+
+.recipe-stages-card-content.MuiCardContent-root:last-child {
+  padding-bottom: 10px;
 }

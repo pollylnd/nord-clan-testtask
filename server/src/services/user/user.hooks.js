@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const _ = require("lodash");
 
 const {
   hashPassword, protect
@@ -22,7 +23,30 @@ module.exports = {
       protect('password')
     ],
     find: [],
-    get: [],
+    get: [
+      async hook => {
+        const { app, result } = hook;
+        const sequelizeClient = app.get("sequelizeClient");
+
+        const { recipe_likes: recipeLikesModel } = sequelizeClient.models;
+
+        const recipeLikes = await recipeLikesModel.findAll({
+          where: {
+            userId: result.id,
+          },
+          attributes: ["recipeId"],
+        }).then((result) => JSON.parse(JSON.stringify(result)));
+
+        
+
+        hook.result = {
+          ...hook.result,
+          recipeLikes: _.map(recipeLikes, 'recipeId')
+        };
+
+        return hook;
+      }
+    ],
     create: [],
     update: [],
     patch: [],

@@ -24,7 +24,7 @@ import CardContent from "@material-ui/core/CardContent";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ClearIcon from '@material-ui/icons/Clear';
 
-// import "./style.css";
+import "../style.css";
 
 const Edit = (props) => {
   const dispatch = useDispatch();
@@ -150,20 +150,24 @@ const Edit = (props) => {
       }
       const stageItem = recipe.stages[i];
       return (
-        <CardContent>
-          Шаг {i + 1}
+        <CardContent className="recipe-stages-form">
+          <div className="recipe-stages-step">
+            Шаг {i + 1}
+          </div>
           <FormControl fullWidth>
             <TextField
               id="outlined-name"
               value={_.get(stageItem, "description")}
+              rows={4}
               name="description"
               variant="outlined"
+              multiline
               required
               placeholder="Описание"
               onChange={(e) => handleChangeStage(e, i)}
             />
           </FormControl>
-          <DeleteIcon onClick={() => handleRemoveStage(i)} />
+          <DeleteIcon className="recipe-delete-icon" onClick={() => handleRemoveStage(i)} />
         </CardContent>
       );
     });
@@ -176,40 +180,46 @@ const Edit = (props) => {
       }
       const ingredientItem = recipe.ingredients[index];
       return (
-        <CardContent className="recipe-ingr-form">
-          <TextField
-            id="outlined-name"
-            value={_.get(ingredientItem, "ingredient.ingredientName")}
-            name="ingredient.ingredientName"
-            variant="outlined"
-            placeholder="Название"
-            onChange={(e) => handleChangeIngredient(e, index)}
-          />
-          <TextField
-            id="outlined-name"
-            value={_.get(ingredientItem, "ingredientAmount")}
-            name="ingredientAmount"
-            variant="outlined"
-            placeholder="Кол-во"
-            type="number"
-            onChange={(e) => handleChangeIngredient(e, index)}
-          />
-          <FormControl required>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="unit"
-              value={_.get(ingredientItem, "unit")}
+        <CardContent className="recipe-ingredient-form">
+          <div className="ingredient-forms">
+            <TextField
+              id="outlined-name"
+              className="recipe-ingredient-name"
+              value={_.get(ingredientItem, "ingredient.ingredientName")}
+              name="ingredient.ingredientName"
+              variant="outlined"
+              placeholder="Название"
               onChange={(e) => handleChangeIngredient(e, index)}
-            >
-              {_.map(ingredientUnit, (item) => {
-                return <MenuItem value={item.value}>{item.name}</MenuItem>;
-              })}
-            </Select>
-          </FormControl>
-          <DeleteIcon onClick={() => handleRemoveIngredient(index)} />
-
-          {altIngredientForm(ingredientItem, index)}
+            />
+            <TextField
+              id="outlined-name"
+              className="recipe-ingredient-amount"
+              value={_.get(ingredientItem, "ingredientAmount")}
+              name="ingredientAmount"
+              variant="outlined"
+              placeholder="Кол-во"
+              type="number"
+              onChange={(e) => handleChangeIngredient(e, index)}
+            />
+            <FormControl required>
+              <Select
+                labelId="demo-simple-select-label"
+                className="recipe-ingredient-unit"
+                id="demo-simple-select"
+                name="unit"
+                value={_.get(ingredientItem, "unit")}
+                onChange={(e) => handleChangeIngredient(e, index)}
+              >
+                {_.map(ingredientUnit, (item) => {
+                  return <MenuItem value={item.value}>{item.name}</MenuItem>;
+                })}
+              </Select>
+            </FormControl>
+            <DeleteIcon onClick={() => handleRemoveIngredient(index)} />
+          </div>
+          <div className="ingredient-alt-forms">
+            {altIngredientForm(ingredientItem, index)}
+          </div>
         </CardContent>
       );
     });
@@ -222,6 +232,7 @@ const Edit = (props) => {
       <>
         <TextField
           id="outlined-name"
+          className="recipe-ingredient-name"
           value={_.get(alternativeIngredient, "ingredientName")}
           name="ingredientName"
           variant="outlined"
@@ -231,6 +242,7 @@ const Edit = (props) => {
         />
         <TextField
           id="outlined-name"
+          className="recipe-ingredient-amount"
           value={_.get(alternativeIngredient, "ingredientAmount")}
           name="ingredientAmount"
           variant="outlined"
@@ -242,6 +254,7 @@ const Edit = (props) => {
         <FormControl required>
           <Select
             labelId="demo-simple-select-label"
+            className="recipe-ingredient-unit"
             id="demo-simple-select"
             name="unit"
             value={_.get(alternativeIngredient, "unit")}
@@ -257,7 +270,7 @@ const Edit = (props) => {
   };
 
   return (
-    <div className="recipe-edit-wrapper">
+    <div className="recipe-form-wrapper">
       <Typography align="center" variant="h3">
         Изменение рецепта
       </Typography>
@@ -389,14 +402,14 @@ const Edit = (props) => {
               </Button>
               <Card>{ingredientForm()}</Card>
             </>
-            <>
+            <div className="recipe-form-stages">
               <Button onClick={() => handleAddStage()}>+ Добавить шаг</Button>
               <Card>{stageForm()}</Card>
-            </>
+            </div>
           </div>
         </CardContent>
       </Card>
-      <Button onClick={() => handleEdit()}>Опубликовать</Button>
+      <Button className="recipe-create-button" onClick={() => handleEdit()}>Опубликовать</Button>
     </div>
   );
 };

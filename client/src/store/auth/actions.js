@@ -16,6 +16,10 @@ const actions = {
   SIGNUP_SUCCESS:          DOCUMENT + 'SIGNUP_SUCCESS',
   SIGNUP_FAILURE:          DOCUMENT + 'SIGNUP_FAILURE',
 
+  SET_LIKE:                  DOCUMENT + 'SET_LIKE',
+  SET_LIKE_SUCCESS:          DOCUMENT + 'SET_LIKE_SUCCESS',
+  SET_LIKE_FAILURE:          DOCUMENT + 'SET_LIKE_FAILURE',
+
   CHANGE_FIELD:            DOCUMENT + 'CHANGE_FIELD',
 
   signInJWT: (accessToken) => {
@@ -82,6 +86,13 @@ const actions = {
     return {
       type: actions.SIGNOUT_FAILURE,
       payload: error,
+    }
+  },
+
+  setLike: (data) => {
+    return {
+      type: actions.SET_LIKE,
+      payload: data.recipeId,
     }
   },
   

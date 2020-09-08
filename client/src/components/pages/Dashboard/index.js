@@ -25,6 +25,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Chip from "@material-ui/core/Chip";
 
 import { ReactComponent as EmptyImg } from "assets/icons/empty-recipe-img.svg";
+import { ReactComponent as NothingFound } from "assets/ne_res.svg";
 
 import "./styles.css";
 import { TextField } from "@material-ui/core";
@@ -49,14 +50,15 @@ const Dashboard = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(!_.isNil(props.authorId)) {
-      dispatch(recipeActions.get({
-        authorId: props.authorId
-      }));
+    if (!_.isNil(props.authorId)) {
+      dispatch(
+        recipeActions.get({
+          authorId: props.authorId,
+        })
+      );
     } else {
       dispatch(recipeActions.get());
     }
-    
   }, [dispatch, props.authorId]);
 
   const recipeList = useSelector((state) => _.get(state.recipe, "list"));
@@ -130,12 +132,16 @@ const Dashboard = (props) => {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           name="complexity"
-          value={!_.isNil(complexity) ? complexity.value : ""}
+          value={_.get(complexity, "value", "")}
           onChange={(e) => setFilter(e)}
         >
           <MenuItem value="">Любой</MenuItem>
           {_.map(recipeComplexity, (item, index) => {
-            return <MenuItem key={index} value={item.value}>{item.name}</MenuItem>;
+            return (
+              <MenuItem key={index} value={item.value}>
+                {item.name}
+              </MenuItem>
+            );
           })}
         </Select>
       </FormControl>
@@ -156,7 +162,11 @@ const Dashboard = (props) => {
         >
           <MenuItem value="">Любая</MenuItem>
           {_.map(recipeCategory, (item, index) => {
-            return <MenuItem key={index} value={item.value}>{item.name}</MenuItem>;
+            return (
+              <MenuItem key={index} value={item.value}>
+                {item.name}
+              </MenuItem>
+            );
           })}
         </Select>
       </FormControl>
@@ -168,7 +178,7 @@ const Dashboard = (props) => {
   };
 
   const FormRow = ({ recipeItem }) => {
-    const complexityName = recipeComplexity[recipeItem.complexity].name;
+    const complexity = recipeComplexity[recipeItem.complexity];
     const categoryName = recipeCategory[recipeItem.category].name;
     const ingredients = _.map(
       _.map(recipeItem.ingredients, "ingredient"),
@@ -216,13 +226,13 @@ const Dashboard = (props) => {
                   <div className="recipe-card-likes">
                     <FavoriteIcon /> &nbsp;{" "}
                     <div className="recipe-card-complexity-name">
-                      {recipeItem.likes}
+                      {_.isNil(recipeItem.likes) ? 0 : recipeItem.likes}
                     </div>
                   </div>
                   <div className="recipe-card-complexity">
                     Уровень:&nbsp;
-                    <div className="recipe-card-complexity-name">
-                      {complexityName}
+                    <div className="recipe-card-complexity-name" style={{color: complexity.color}}>
+                      {complexity.name}
                     </div>
                   </div>
                 </div>
@@ -237,7 +247,7 @@ const Dashboard = (props) => {
   return (
     <div className={classes.root}>
       <Typography className="dashboard-title" align="center" variant="h4">
-        Каталог рецептов
+        {_.isNil(props.authorId) ? "Каталог рецептов" : "Мои рецепты"}
       </Typography>
       <div className="dashboard-filters">
         {renderFilter()}
@@ -247,12 +257,17 @@ const Dashboard = (props) => {
         </div>
         {renderResetFilters()}
       </div>
-
-      <Grid container spacing={3}>
-        {_.map(recipeList, (item) => {
-          return <FormRow key={item.id} recipeItem={item} />;
-        })}
-      </Grid>
+      {!_.isEmpty(recipeList) ? (
+        <Grid container spacing={3}>
+          {_.map(recipeList, (item) => {
+            return <FormRow key={item.id} recipeItem={item} />;
+          })}
+        </Grid>
+      ) : (
+        <div className="dashboard-nothing-found">
+          <NothingFound />
+        </div>
+      )}
     </div>
   );
 };

@@ -55,7 +55,10 @@ export default function reducer(state = initState, { type, payload }) {
     case actions.GET_ID_SUCCESS:
       return {
         ...state,
-        current: payload,
+        current: {
+          ...state.current,
+          ...payload
+        },
         edit: { 
           ...state.edit,
           ...payload 
@@ -124,10 +127,13 @@ export default function reducer(state = initState, { type, payload }) {
         errorMessage: "Error",
       };
 
-    case actions.SET_PAGE:
+    case actions.SET_LIKE_SUCCESS:
       return {
         ...state,
-        page: payload.page,
+        current: {
+          ...state.current,
+          likes: state.current.likes + 1,
+        }
       };
 
     case actions.SET_FILTERS:

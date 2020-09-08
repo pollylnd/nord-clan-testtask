@@ -220,6 +220,11 @@ module.exports = {
     patch: [
       async (hook) => {
         const { app, data, id } = hook;
+
+        if(!data.ingredients) {
+          return hook;
+        }
+
         const sequelizeClient = app.get("sequelizeClient");
 
         const {
@@ -327,7 +332,7 @@ module.exports = {
             ];
           });
 
-          const findOrCreateStagesPromise =_.map(data.stages, async (stageItem, i) => {
+          const findOrCreateStagesPromise =_.map(data.stages, async (stageItem) => {
             let existsRecipeStage = null;
             if (stageItem.id) {
               existsRecipeStage = await recipeStageModel.findOne({
@@ -362,6 +367,9 @@ module.exports = {
 
         return hook;
       },
+      // async (hook) => {
+      //   return hook;
+      // },
     ],
     remove: [],
   },

@@ -22,43 +22,80 @@ import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import DeleteIcon from "@material-ui/icons/Delete";
+import ClearIcon from '@material-ui/icons/Clear';
 
-import "./style.css";
+import "../style.css";
 
 const Create = () => {
   const dispatch = useDispatch();
   const [countIngredients, setCountIngredients] = useState(1);
   const [countStages, setCountStages] = useState(1);
-  const [errorField, setErrorField] = useState([])
+  const [errorFields, setErrorFields] = useState([]);
 
   const recipe = useSelector((state) => _.get(state.recipe, "create"));
   const currentUser = useSelector((state) => _.get(state.auth, "user"));
 
+  const mapValidationSimpleFields = ["name", "complexity", "category"];
+
+  const validateIngredients = () => {
+    if (countIngredients > 0 && !_.isNil(recipe.ingredients)) {
+      for (const ingredient of recipe.ingredients) {
+        if (
+          ingredient.ingredientName &&
+          ingredient.ingredientAmount &&
+          ingredient.unit
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
+  const validateStages = () => {
+    if (countStages > 0 && !_.isNil(recipe.stages)) {
+      for (const stages of recipe.stages) {
+        if (
+          stages.description
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
   const handleChange = (e) => {
     const value = _.get(e.target, "value");
     const key = _.get(e.target, "name");
- 
+
     dispatch(recipeActions.changeField("create", key, value));
   };
 
   const onDrop = (acceptedFiles) => {
     acceptedFiles.forEach((file) => {
-      const fileReader = new FileReader()
+      const fileReader = new FileReader();
       fileReader.onload = function (event) {
-        const image = new Image()
-        image.src = fileReader.result
+        const image = new Image();
+        image.src = fileReader.result;
         image.onload = function (e) {
           const imageInfo = {
             name: file.name,
             src: fileReader.result,
-            type: file.type
-          }
+            type: file.type,
+          };
           dispatch(recipeActions.changeField("create", "image", imageInfo));
-        }
-      }
-      fileReader.readAsDataURL(file)
-    })
-  }
+        };
+      };
+      fileReader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemoveImage = () => {
+    dispatch(recipeActions.changeField("edit", "image", null));
+  };
 
   const handleChangeIngredient = (e, index) => {
     const value = _.get(e.target, "value");
@@ -87,29 +124,27 @@ const Create = () => {
   const handleRemoveStage = (index) => {
     dispatch(recipeActions.removeFieldMultiple("create", "stages", index));
 
-    setCountStages(countStages - 1);
+    setCountStages((prevCount) => prevCount - 1);
   };
 
   const handleAddStage = () => {
-    const newStageIndex = countStages + 1;
     dispatch(recipeActions.addFieldMultiple("create", "stages", countStages));
 
-    setCountStages(newStageIndex);
+    setCountStages((prevCount) => prevCount + 1);
+  };
+
+  const handleAddIngredient = () => {
+    dispatch(
+      recipeActions.addFieldMultiple("create", "ingredients", countIngredients)
+    );
+
+    setCountIngredients((prevCount) => prevCount + 1);
   };
 
   const handleRemoveIngredient = (index) => {
     dispatch(recipeActions.removeFieldMultiple("create", "ingredients", index));
 
-    setCountIngredients(countIngredients - 1);
-  };
-
-  const handleAddIngredient = () => {
-    const newIngredientIndex = countIngredients + 1;
-    dispatch(
-      recipeActions.addFieldMultiple("create", "ingredients", countIngredients)
-    );
-
-    setCountIngredients(newIngredientIndex);
+    setCountIngredients((prevCount) => prevCount - 1);
   };
 
   const handleChangeAltIngredient = (e, index) => {
@@ -127,51 +162,68 @@ const Create = () => {
     );
   };
 
-  const mapValidation = [
-    'name',
-    'complexity',
-    'category',
-  ]
-
   const handleCreate = () => {
     const formData = recipe;
-    const errorFields = [];
+    const notValidFields = [];
+    const isValidIngredients = validateIngredients();
+    const isValidStages = validateStages();
 
-    formData.authorId = currentUser.id
-    formData.author = currentUser.name
-    
-    for(let field in formData) {
-      if(!formData[field] && _.includes(mapValidation, field)) {
-        errorFields.push(field)
-        setErrorField(prev => [...prev, field])
+    formData.authorId = currentUser.id;
+    formData.author = currentUser.name;
+
+    for (let field in formData) {
+      if (!formData[field] && _.includes(mapValidationSimpleFields, field)) {
+        notValidFields.push(field);
+        setErrorFields((prev) => [...prev, field]);
       }
     }
-    if( _.isEmpty(errorFields)) {
+
+    if (!isValidIngredients) {
+      notValidFields.push("ingredients");
+      setErrorFields((prev) => [...prev, "ingredients"]);
+    }
+
+    if (!isValidStages) {
+      notValidFields.push("stages");
+      setErrorFields((prev) => [...prev, "stages"]);
+    }
+
+    if (_.isEmpty(notValidFields)) {
       dispatch(recipeActions.create(formData));
     }
   };
 
   const stageForm = () => {
+    console.log(errorFields)
     return _.map(new Array(countStages), (v, i) => {
       if (!recipe.stages) {
         return false;
       }
       const stageItem = recipe.stages[i];
       return (
-        <CardContent>
-          Шаг {i + 1}
+        <CardContent className="recipe-stages-form">
+          <div className="recipe-stages-step">
+            Шаг {i + 1}
+          </div>
           <FormControl fullWidth>
             <TextField
+              error={
+                _.includes(errorFields, "stages") && _.isNil(stageItem.description)
+                  ? true
+                  : false
+              }
               id="outlined-name"
               value={_.get(stageItem, "description")}
               name="description"
+              rows={4}
+              multiline
               variant="outlined"
               required
               placeholder="Описание"
               onChange={(e) => handleChangeStage(e, i)}
             />
           </FormControl>
-          <DeleteIcon onClick={() => handleRemoveStage(i)} />
+          <DeleteIcon className="recipe-delete-icon" onClick={() => handleRemoveStage(i)} />
         </CardContent>
       );
     });
@@ -184,40 +236,51 @@ const Create = () => {
       }
       const ingredientItem = recipe.ingredients[index];
       return (
-        <CardContent className="recipe-ingr-form">
-          <TextField
-            id="outlined-name"
-            value={_.get(ingredientItem, "ingredientName")}
-            name="ingredientName"
-            variant="outlined"
-            placeholder="Название"
-            onChange={(e) => handleChangeIngredient(e, index)}
-          />
-          <TextField
-            id="outlined-name"
-            value={_.get(ingredientItem, "ingredientAmount")}
-            name="ingredientAmount"
-            variant="outlined"
-            placeholder="Кол-во"
-            type="number"
-            onChange={(e) => handleChangeIngredient(e, index)}
-          />
-          <FormControl required>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="unit"
-              value={_.get(ingredientItem, "unit")}
+        <CardContent className="recipe-ingredient-form">
+          <div className={_.includes(errorFields, "ingredients") &&
+          ( _.isNil(ingredientItem.ingredientName) || _.isNil(ingredientItem.ingredientAmount) ||
+           _.isNil(ingredientItem.unit))
+              ? "ingredient-forms-error"
+              : "ingredient-forms"}
+          >
+            <TextField
+              id="outlined-name"
+              className="recipe-ingredient-name"
+              value={_.get(ingredientItem, "ingredientName")}
+              name="ingredientName"
+              variant="outlined"
+              placeholder="Название"
               onChange={(e) => handleChangeIngredient(e, index)}
-            >
-              {_.map(ingredientUnit, (item) => {
-                return <MenuItem value={item.value}>{item.name}</MenuItem>;
-              })}
-            </Select>
-          </FormControl>
-          <DeleteIcon onClick={() => handleRemoveIngredient(index)} />
-
-          {altIngredientForm(ingredientItem, index)}
+            />
+            <TextField
+              id="outlined-name"
+              className="recipe-ingredient-amount"
+              value={_.get(ingredientItem, "ingredientAmount")}
+              name="ingredientAmount"
+              variant="outlined"
+              placeholder="Кол-во"
+              type="number"
+              onChange={(e) => handleChangeIngredient(e, index)}
+            />
+            <FormControl required>
+              <Select
+                className="recipe-ingredient-unit"
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                name="unit"
+                value={_.get(ingredientItem, "unit")}
+                onChange={(e) => handleChangeIngredient(e, index)}
+              >
+                {_.map(ingredientUnit, (item) => {
+                  return <MenuItem value={item.value}>{item.name}</MenuItem>;
+                })}
+              </Select>
+            </FormControl>
+            <DeleteIcon className="recipe-delete-icon" onClick={() => handleRemoveIngredient(index)} />
+          </div>
+          <div className="ingredient-alt-forms">
+            {altIngredientForm(ingredientItem, index)}
+          </div>
         </CardContent>
       );
     });
@@ -229,15 +292,17 @@ const Create = () => {
       <>
         <TextField
           id="outlined-name"
+          className="recipe-ingredient-name"
           value={_.get(altIngredient, "altIngredientName")}
           name="ingredientName"
           variant="outlined"
           required
-          placeholder="Название"
+          placeholder="Альтернативный ингредиент"
           onChange={(e) => handleChangeAltIngredient(e, index)}
         />
         <TextField
           id="outlined-name"
+          className="recipe-ingredient-amount"
           value={_.get(altIngredient, "altIngredientAmount")}
           name="ingredientAmount"
           variant="outlined"
@@ -249,6 +314,7 @@ const Create = () => {
         <FormControl required>
           <Select
             labelId="demo-simple-select-label"
+            className="recipe-ingredient-unit"
             id="demo-simple-select"
             name="unit"
             value={_.get(altIngredient, "unit")}
@@ -264,7 +330,7 @@ const Create = () => {
   };
 
   return (
-    <div className="recipe-create-wrapper">
+    <div className="recipe-form-wrapper">
       <Typography align="center" variant="h3">
         Добавление рецепта
       </Typography>
@@ -273,7 +339,12 @@ const Create = () => {
           <div className="recipe-form">
             <FormControl fullWidth>
               <TextField
-                error={_.includes(errorField, 'name') && _.isEmpty(_.get(recipe, "name")) ? true : false}
+                error={
+                  _.includes(errorFields, "name") &&
+                  _.isEmpty(_.get(recipe, "name"))
+                    ? true
+                    : false
+                }
                 id="outlined-name"
                 label="Название"
                 name="name"
@@ -282,12 +353,11 @@ const Create = () => {
                 required
                 placeholder="Введите название рецепта"
                 onChange={(e) => handleChange(e)}
-                // helperText="Incorrect entry."
               />
             </FormControl>
 
-            <div className='recipe-upload-image'>
-              <Dropzone 
+            <div className="recipe-upload-image">
+              <Dropzone
                 onDrop={(acceptedFiles) => onDrop(acceptedFiles)}
                 accept="image/*"
                 multiple={false}
@@ -300,17 +370,26 @@ const Create = () => {
                         Загрузите изображение
                       </Button>
                     </div>
-                    {
-                      !_.isNil(recipe.image) && (
-                        <div className="recipe-image">
-                          <span className="recipe-image-name">{recipe.image.name}</span>
-                          <img className='img-preview' src={recipe.image.src} alt={recipe.image.name} />
+                    {!_.isNil(recipe.image) && (
+                      <div className="recipe-image">
+                        <span className="recipe-image-name">
+                          {recipe.image.name}
+                        </span>
+                        <div>
+                          <img
+                            className="img-preview"
+                            src={recipe.image.src}
+                            alt={recipe.image.name}
+                          />
+                          <Button onClick={() => handleRemoveImage()}>
+                            <ClearIcon />
+                          </Button>
                         </div>
-                      )
-                    }
+                        
+                      </div>
+                    )}
                   </section>
                 )}
-                
               </Dropzone>
             </div>
 
@@ -332,8 +411,16 @@ const Create = () => {
               <Box width="45%">
                 <Card>
                   <CardContent>
-                    <FormControl fullWidth required 
-                      error={_.includes(errorField, 'complexity') && _.isNil(_.get(recipe, "complexity")) ? true : false}>
+                    <FormControl
+                      fullWidth
+                      required
+                      error={
+                        _.includes(errorFields, "complexity") &&
+                        _.isNil(_.get(recipe, "complexity"))
+                          ? true
+                          : false
+                      }
+                    >
                       <InputLabel id="demo-simple-select-label">
                         Сложность
                       </InputLabel>
@@ -357,8 +444,16 @@ const Create = () => {
               <Box width="45%">
                 <Card>
                   <CardContent>
-                    <FormControl fullWidth required
-                      error={_.includes(errorField, 'category') && _.isNil(_.get(recipe, "category")) ? true : false}>
+                    <FormControl
+                      fullWidth
+                      required
+                      error={
+                        _.includes(errorFields, "category") &&
+                        _.isNil(_.get(recipe, "category"))
+                          ? true
+                          : false
+                      }
+                    >
                       <InputLabel id="demo-simple-select-label">
                         Категория
                       </InputLabel>
@@ -386,14 +481,14 @@ const Create = () => {
               </Button>
               <Card>{ingredientForm()}</Card>
             </>
-            <div>
+            <div className="recipe-form-stages">
               <Button onClick={() => handleAddStage()}>+ Добавить шаг</Button>
               <Card>{stageForm()}</Card>
             </div>
           </div>
         </CardContent>
       </Card>
-      <Button onClick={() => handleCreate()}>Опубликовать</Button>
+      <Button className="recipe-create-button" onClick={() => handleCreate()}>Опубликовать</Button>
     </div>
   );
 };

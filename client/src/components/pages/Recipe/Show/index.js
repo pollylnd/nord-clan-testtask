@@ -6,6 +6,7 @@ import "moment/locale/ru";
 import _ from "lodash";
 
 import recipeActions from "store/recipe/actions";
+import userActions from "store/auth/actions";
 
 import {
   recipeComplexity,
@@ -14,7 +15,6 @@ import {
 } from "helpers/params";
 
 import Divider from "@material-ui/core/Divider";
-import FavoriteIcon from "@material-ui/icons/Favorite";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -25,6 +25,9 @@ import TableRow from "@material-ui/core/TableRow";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
+
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 
 import { ReactComponent as EmptyImg } from "assets/icons/empty-recipe-img.svg";
 
@@ -43,10 +46,27 @@ const Show = (props) => {
 
   const recipe = useSelector((state) => _.get(state.recipe, "current"));
   const currentUser = useSelector((state) => _.get(state.auth, "user"));
+
+  let isLiked = false
+
+  if(!_.isNil(currentUser) && _.includes(currentUser.recipeLikes, recipe.id)) {
+    isLiked = true
+  } 
   
   const handleRemove = () => {
     dispatch(recipeActions.remove(currentId))
   }
+
+  const handleLike = () => {
+    dispatch(recipeActions.setLike({
+      recipeId: recipe.id,
+      userId: currentUser.id
+    }))
+    dispatch(userActions.setLike({
+      recipeId: recipe.id,
+    }))
+  }
+
 
   const createdAt =
     !_.isEmpty(recipe) && moment(recipe.createdAt).format("DD MMMM YYYY");
@@ -122,7 +142,7 @@ const Show = (props) => {
           <div className="recipe-header">
             <div className="recipe-header-right">
               <div className="recipe-name">{recipe.name}</div>
-              <div className="recipe-author-name">{_.get(recipe, 'author.userName')}</div>
+              <div className="recipe-author-name"> Автор: {_.get(recipe, 'author.userName')}</div>
             </div>
             <div className="recipe-info">
               {currentUser && currentUser.id === recipe.authorId && (
@@ -143,18 +163,15 @@ const Show = (props) => {
           </div>
           <Divider />
           <div className="recipe-description">
-            <div className="recipe-image">
-              {!_.isNil(recipe.image) ? (
-                <img className="recipe-item-image" src={recipe.image.src} alt="" />
-              ) : (
-                <EmptyImg />
-              )}
-            </div>
-            <div className="recipe-description-info ">
-              <div className="recipe-description-text col-md-8">
-                {recipe.description}
+            <div className="recipe-description-main">
+              <div className="recipe-image-show">
+                {!_.isNil(recipe.image) ? (
+                  <img className="recipe-item-image" src={recipe.image.src} alt="" />
+                ) : (
+                  <EmptyImg />
+                )}
               </div>
-              <div className="recipe-description-main">
+              <div className="recipe-description-right">
                 <div className="recipe-description-item">
                   <div className="recipe-description-item-name">
                     Уровень сложности приготовления:
@@ -163,16 +180,32 @@ const Show = (props) => {
                     {complexity}
                   </div>
                 </div>
+                <Divider />
                 <div className="recipe-description-item">
                   <div className="recipe-description-item-name">
-                    <FavoriteIcon />
-                    {recipe.likes}
+                    {(!_.isNil(currentUser) && currentUser.id !== recipe.authorId) ? (
+                      <div onClick={() => !isLiked && handleLike()}>
+                        {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}&nbsp;
+                        {_.isNil(recipe.likes) ? 0 : recipe.likes}
+                      </div>
+                    ) : (
+                      <>
+                        <FavoriteIcon /> &nbsp;
+                        {_.isNil(recipe.likes) ? 0 : recipe.likes}
+                      </>
+                    )}
+                    
+                  </div>
+                </div>
+                <Divider />
+                <div className="recipe-description-info ">
+                  <div className="recipe-description-text col-md-8">
+                    {recipe.description}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <Divider />
           <div className="recipe-ingredients">{ingredientTable()}</div>
           <Divider />
           <div className="recipe-steps">
@@ -181,14 +214,18 @@ const Show = (props) => {
             </div>
             {_.map(recipe.stages, (stage) => {
               return (
-                <div className="recipe-steps-item">
-                  <div className="recipe-steps-item-index">
-                    Шаг {stage.index + 1}
+                <Card  className="recipe-stages-card">
+                  <CardContent className="recipe-stages-card-content">
+                  <div className="recipe-steps-item">
+                    <div className="recipe-steps-item-index">
+                      Шаг {stage.index + 1}
+                    </div>
+                    <div className="recipe-steps-item-desc">
+                      {stage.description}
+                    </div>
                   </div>
-                  <div className="recipe-steps-item-desc">
-                    {stage.description}
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               );
             })}
           </div>

@@ -45,8 +45,6 @@ function* signOut() {
   } catch (e) {
     yield put(actions.signOutFailure(e));
   }
-
-
 }
 
 

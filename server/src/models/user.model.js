@@ -89,6 +89,10 @@ module.exports = function (app) {
       foreignKey: 'authorId',
       as: 'author' 
     });
+    user.hasMany(models.recipe_likes, {
+      foreignKey: 'userId',
+      as: 'user' 
+    });
   };
 
   return user;
