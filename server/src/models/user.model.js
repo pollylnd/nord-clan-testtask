@@ -17,36 +17,32 @@ module.exports = function (app) {
 
     userName: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: 'Имя не может быть пустым'
+        },
+      }
     },
 
     email: {
       type: DataTypes.STRING,
       defaultValue: '',
+      allowNull: false,
       validate: {
-        notEmpty: {
-          msg: 'emailNotNull'
+        notNull: {
+          msg: 'Почта не может быть пустой'
         },
-        not: {
-          args: ['^[а-яА-я]*$', 'i'],
-          regExp: '^[а-яА-я]*$',
-          msg: 'notHasBeenCyrillic'
-        },
-        isEmail: {
-          msg: 'emailNotValid'
-        },
-        max: {
-          args: 320,
-          msg: 'emailMaxErr'
-        },
-        isLowercase: {
-          msg: 'isLowercaseEmailErr'
+        is: {
+          args: ['^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', 'i'],
+          regExp: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
+          msg: 'Неверный формат почты'
         },
         isUnique: async (email) => {
           await user.findOne({ where: { email } })
             .then(result => {
               if (result) {
-                throw new Error('isExistEmail');
+                throw new Error('Пользователь с данной почтой уже существует');
               }
             });
         }
@@ -56,15 +52,6 @@ module.exports = function (app) {
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        notEmpty: {
-          msg: 'passwordNotNull'
-        },
-        min: {
-          args: 6,
-          msg: 'PasswordLengthSmall'
-        },
-      }
     },
 
     isDeleted: {

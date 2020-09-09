@@ -62,7 +62,6 @@ export default function reducer(state = initState, { type, payload }) {
     }
 
     case actions.SET_LIKE: {
-      const newRecipeLike = payload
       const oldRecipeLikes = state.user.recipeLikes.slice(0, state.user.recipeLikes.length)
       oldRecipeLikes.push(payload)
 

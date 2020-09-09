@@ -57,23 +57,23 @@ const SignUp = () => {
             <FormControl fullWidth margin="dense">
               <TextField
                 required
-                id="standard-required-input"
+                id="standard-required-input-name"
                 label="Имя"
                 name="userName"
                 variant="outlined"
-                value={_.get(user, "userName")}
+                value={_.get(user, "userName", "")}
                 onChange={(e) => handleChange(e)}
               />
             </FormControl>
             <FormControl fullWidth margin="dense">
               <TextField
                 required
-                id="standard-required-input"
+                id="standard-required-input-email"
                 label="Почта"
                 name="email"
                 type="email"
                 variant="outlined"
-                value={_.get(user, "email")}
+                value={_.get(user, "email", "")}
                 onChange={(e) => handleChange(e)}
               />
             </FormControl>
@@ -84,9 +84,8 @@ const SignUp = () => {
                 label="Пароль"
                 type="password"
                 variant="outlined"
-                autoComplete="current-password"
                 name="password"
-                value={_.get(user, "password")}
+                value={_.get(user, "password", "")}
                 onChange={(e) => handleChange(e)}
               />
             </FormControl>

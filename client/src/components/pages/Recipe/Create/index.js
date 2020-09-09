@@ -175,7 +175,7 @@ const Create = () => {
         continue;
       }
 
-      const stringValue = formData[field].toString();
+      const stringValue = !_.isNil(formData[field]) && formData[field].toString();
 
       if ((_.isNil(stringValue) || _.isEmpty(stringValue))) {
         notValidFields.push(field);
@@ -205,7 +205,7 @@ const Create = () => {
       }
       const stageItem = recipe.stages[i];
       return (
-        <CardContent className="recipe-stages-form">
+        <CardContent key={i} className="recipe-stages-form">
           <div className="recipe-stages-step">
             Шаг {i + 1}
           </div>
@@ -240,9 +240,9 @@ const Create = () => {
       }
       const ingredientItem = recipe.ingredients[index];
       return (
-        <CardContent className="recipe-ingredient-form">
+        <CardContent key={index} className="recipe-ingredient-form">
           <div className={_.includes(errorFields, "ingredients") &&
-          ( _.isNil(ingredientItem.ingredientName) || _.isNil(ingredientItem.ingredientAmount) ||
+          ( _.isNil(ingredientItem.ingredientName) || (_.isEmpty(ingredientItem.ingredientAmount) || ingredientItem.ingredientAmount === 0) ||
            _.isNil(ingredientItem.unit))
               ? "ingredient-forms-error"
               : "ingredient-forms"}
@@ -277,7 +277,7 @@ const Create = () => {
                 onChange={(e) => handleChangeIngredient(e, index)}
               >
                 {_.map(ingredientUnit, (item) => {
-                  return <MenuItem value={item.value}>{item.name}</MenuItem>;
+                  return <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>;
                 })}
               </Select>
             </FormControl>
@@ -326,7 +326,7 @@ const Create = () => {
             onChange={(e) => handleChangeAltIngredient(e, index)}
           >
             {_.map(ingredientUnit, (item) => {
-              return <MenuItem value={item.value}>{item.name}</MenuItem>;
+              return <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>;
             })}
           </Select>
         </FormControl>
@@ -437,7 +437,7 @@ const Create = () => {
                       >
                         {_.map(recipeComplexity, (item) => {
                           return (
-                            <MenuItem value={item.value}>{item.name}</MenuItem>
+                            <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>
                           );
                         })}
                       </Select>
@@ -470,7 +470,7 @@ const Create = () => {
                       >
                         {_.map(recipeCategory, (item) => {
                           return (
-                            <MenuItem value={item.value}>{item.name}</MenuItem>
+                            <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>
                           );
                         })}
                       </Select>

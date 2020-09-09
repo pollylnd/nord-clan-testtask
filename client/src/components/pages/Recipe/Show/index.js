@@ -114,8 +114,8 @@ const Show = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.name}>
+            {rows.map((row, i) => (
+              <TableRow key={`table-row-${i}`}>
                 <TableCell component="th" scope="row">
                   {row.mainIngredients}
                 </TableCell>
@@ -215,8 +215,9 @@ const Show = (props) => {
                 Пошаговый рецепт приготовления
               </div>
               {_.map(recipe.stages, (stage) => {
+
                 return (
-                  <Card  className="recipe-stages-card">
+                  <Card key={stage.id} className="recipe-stages-card">
                     <CardContent className="recipe-stages-card-content">
                     <div className="recipe-steps-item">
                       <div className="recipe-steps-item-index">

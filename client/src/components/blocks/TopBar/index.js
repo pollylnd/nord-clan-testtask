@@ -34,7 +34,7 @@ const TopBar = () => {
       <AppBar className="topbar-wrapper">
         <Toolbar className="topbar-toolbar">
           <Link to="/dashboard" className="topbar-menu-left">
-            <img src={LogoIcon} alt="pasta la vista" />
+            <img className="topbar-menu-logo" src={LogoIcon} alt="pasta la vista" />
           </Link>
           {_.isEmpty(currentUser) ? (
             <Link to="/sign-in" className="topbar-menu-right">

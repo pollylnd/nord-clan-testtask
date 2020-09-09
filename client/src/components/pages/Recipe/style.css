@@ -7,7 +7,7 @@
 .create-recipe-selectors {
   display: flex;
   justify-content: space-between;
-  margin: 15px;
+  margin: 15px 0 15px 0;
 }
 
 .recipe-delete-icon {
@@ -24,11 +24,8 @@
 }
 
 .recipe-stages-step {
-  width: 6%;
-}
-
-.recipe-ingredient-form {
-  display: flex;
+  width: 10%;
+  font-weight: 600;
 }
 
 .create-recipe-selectors .MuiInput-underline:after {
@@ -105,4 +102,19 @@
   border: 1px solid red;
   padding: 5px;
   border-radius: 4px;
+}
+
+@media(max-width: 770px) {
+  .recipe-stages-form {
+    flex-wrap: wrap;
+  }
+  .recipe-ingredient-form {
+    flex-wrap: wrap;
+  }
+}
+
+@media(max-width: 450px) {
+  .ingredient-forms {
+    flex-wrap: wrap;
+  }
 }

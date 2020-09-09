@@ -74,7 +74,7 @@ const SignIn = () => {
                 label="Пароль"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete=""
                 variant="outlined"
                 value={_.get(user, "password")}
                 className="signin-form-label"

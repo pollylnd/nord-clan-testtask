@@ -26,7 +26,7 @@
 }
 
 .MuiFormControl-root.dashboard-filter-search {
-  min-width: 350px;
+  min-width: 310px;
 }
 
 .recipe-card-bottom {
@@ -39,6 +39,8 @@
 .MuiChip-outlined.recipe-card-category {
   border: 1px solid #16612c;
   margin-bottom: 20px;
+  min-height: 30px;
+  width: 50%;
 }
 
 .recipe-card-likes {
