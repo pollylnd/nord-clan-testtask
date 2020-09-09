@@ -16,7 +16,7 @@
   ```docker-compose up```
 4. Применить бэкап базы данных
   ```pg_restore -d postgres -h localhost --disable-triggers -U postgres backend.dump```
-  Стандарный пароль: ```postgres```
+  Стандарный пароль: ```password```
 
 ### Запуск клиента:
 
