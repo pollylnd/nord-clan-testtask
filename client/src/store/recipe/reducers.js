@@ -88,7 +88,7 @@ export default function reducer(state = initState, { type, payload }) {
     case actions.CREATE_SUCCESS:
       return {
         ...state,
-        create: {},
+        create: initState.create,
         errorMessage: "",
       };
 

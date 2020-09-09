@@ -56,7 +56,6 @@ function* create(action) {
   
       recipeData.image = uploadData.id;
     }
-
     const recipe = yield backend.service("recipe").create(recipeData);
     if (_.size(recipe)) {
       yield put(actions.createSuccess(recipeData));

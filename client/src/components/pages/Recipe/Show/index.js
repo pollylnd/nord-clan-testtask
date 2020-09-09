@@ -77,7 +77,7 @@ const Show = (props) => {
     function preparedMainIngredient(ingredientItem) {
       const unit = ingredientUnit[ingredientItem.unit].name;
       return (
-        ingredientItem.ingredient.ingredientName + " - " + ingredientItem.ingredientAmount + unit
+        `${_.get(ingredientItem.ingredient, 'ingredientName')} - ${_.get(ingredientItem, 'ingredientAmount')} ${unit}`
       );
     }
 
@@ -89,10 +89,7 @@ const Show = (props) => {
         const unit = _.get(_.get(ingredientUnit, `${unitInteger}`), 'name');
   
         return (
-          _.get(alternativeIngredient, 'ingredientName') +
-          " - " +
-          _.get(alternativeIngredient, 'ingredientAmount') + 
-          unit
+          `${_.get(alternativeIngredient, 'ingredientName')} - ${_.get(alternativeIngredient, 'ingredientAmount')} ${unit}`
         );
       } else {
         return "";
@@ -117,8 +114,8 @@ const Show = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.name}>
+            {rows.map((row, i) => (
+              <TableRow key={`table-row-${i}`}>
                 <TableCell component="th" scope="row">
                   {row.mainIngredients}
                 </TableCell>
@@ -218,8 +215,9 @@ const Show = (props) => {
                 Пошаговый рецепт приготовления
               </div>
               {_.map(recipe.stages, (stage) => {
+
                 return (
-                  <Card  className="recipe-stages-card">
+                  <Card key={stage.id} className="recipe-stages-card">
                     <CardContent className="recipe-stages-card-content">
                     <div className="recipe-steps-item">
                       <div className="recipe-steps-item-index">

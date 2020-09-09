@@ -35,16 +35,32 @@ import "./styles.css";
 const useStyles = makeStyles((theme) => ({
   link: {
     textDecoration: "none",
+    display: "flex",
+    height: "100%"
   },
   root: {
     flexGrow: 1,
   },
   card: {
-    height: 420,
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   ingredients: {
-    height: 50,
+    width: "350px",
+    minHeight: "50px",
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    whiteSpace: "nowrap"
   },
+  cardContent: {
+    height: "50%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    width: "95%"
+  }
 }));
 
 const Dashboard = (props) => {
@@ -206,7 +222,7 @@ const Dashboard = (props) => {
                 </div>
               )}
               <Divider light variant="middle" />
-              <CardContent>
+              <CardContent className={classes.cardContent}>
                 <Typography gutterBottom variant="h5" component="h2">
                   {recipeItem.name}
                 </Typography>

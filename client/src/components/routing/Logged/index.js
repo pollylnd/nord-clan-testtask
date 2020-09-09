@@ -12,8 +12,8 @@ export default function LoggedApp() {
     <Switch>
       <Route exact path="/" component={DashBoard} />
       <Route path="/dashboard" component={DashBoard} />
-      <Route path="/recipe/create" component={RecipeCreate} />
-      <Route path="/recipe/user" component={MyRecipes} />
+      <Route exact path="/recipe-create" component={RecipeCreate} />
+      <Route path="/recipe-user" component={MyRecipes} />
       <Route exact path="/recipe/:id" component={RecipeShow} />
       <Route path="/recipe/:id/edit" component={RecipeEdit} />
     </Switch>

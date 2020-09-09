@@ -177,7 +177,13 @@ const Edit = (props) => {
     const isValidStages = validateStages();
 
     for (let field in formData) {
-      if (!formData[field] && _.includes(mapValidationSimpleFields, field)) {
+      if (!_.includes(mapValidationSimpleFields, field)) {
+        continue;
+      }
+
+      const stringValue = !_.isNil(formData[field]) && formData[field].toString();
+
+      if ((_.isNil(stringValue) || _.isEmpty(stringValue))) {
         notValidFields.push(field);
         setErrorFields((prev) => [...prev, field]);
       }
@@ -209,7 +215,7 @@ const Edit = (props) => {
       }
       const stageItem = recipe.stages[i];
       return (
-        <CardContent className="recipe-stages-form">
+        <CardContent key={i} className="recipe-stages-form">
           <div className="recipe-stages-step">
             Шаг {i + 1}
           </div>
@@ -244,12 +250,12 @@ const Edit = (props) => {
       }
       const ingredientItem = recipe.ingredients[index];
       return (
-        <CardContent className="recipe-ingredient-form">
+        <CardContent key={index} className="recipe-ingredient-form">
           <div className={_.includes(errorFields, "ingredients") &&
           ( _.isNil(ingredientItem.ingredient.ingredientName) ||
             (!_.isNil(ingredientItem['ingredient.ingredientName']) ||
             _.isEmpty(ingredientItem['ingredient.ingredientName'])) ||
-            _.isNil(ingredientItem.ingredientAmount) ||
+            (_.isEmpty(ingredientItem.ingredientAmount) || ingredientItem.ingredientAmount === 0) ||
             _.isNil(ingredientItem.unit))
               ? "ingredient-forms-error"
               : "ingredient-forms"}
@@ -271,6 +277,7 @@ const Edit = (props) => {
               variant="outlined"
               placeholder="Кол-во"
               type="number"
+              inputProps={{ min: "0" }}
               onChange={(e) => handleChangeIngredient(e, index)}
             />
             <FormControl required>
@@ -283,7 +290,7 @@ const Edit = (props) => {
                 onChange={(e) => handleChangeIngredient(e, index)}
               >
                 {_.map(ingredientUnit, (item) => {
-                  return <MenuItem value={item.value}>{item.name}</MenuItem>;
+                  return <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>;
                 })}
               </Select>
             </FormControl>
@@ -332,7 +339,7 @@ const Edit = (props) => {
             onChange={(e) => handleChangeAltIngredient(e, index)}
           >
             {_.map(ingredientUnit, (item) => {
-              return <MenuItem value={item.value}>{item.name}</MenuItem>;
+              return <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>;
             })}
           </Select>
         </FormControl>
@@ -440,7 +447,7 @@ const Edit = (props) => {
                         >
                           {_.map(recipeComplexity, (item) => {
                             return (
-                              <MenuItem value={item.value}>{item.name}</MenuItem>
+                              <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>
                             );
                           })}
                         </Select>
@@ -478,7 +485,7 @@ const Edit = (props) => {
                       >
                         {_.map(recipeCategory, (item) => {
                           return (
-                            <MenuItem value={item.value}>{item.name}</MenuItem>
+                            <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>
                           );
                         })}
                       </Select>

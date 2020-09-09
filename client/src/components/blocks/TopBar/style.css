@@ -21,14 +21,20 @@
   border-bottom: 1px solid black;
 }
 
-.topbar-toolbar {
+.MuiToolbar-root.topbar-toolbar {
   display: flex;
   justify-content: space-between;
+  padding-left: 0;
+  flex-wrap: wrap;
 }
 
 .topbar-menu-left {
   display: flex;
   align-items: center;
+}
+
+.topbar-menu-logo {
+  width: 300px;
 }
 
 .recipe-create-button{ 
@@ -62,4 +68,10 @@
 
 .topbar-menu-button.MuiButton-root:hover {
   background: none !important;
+}
+
+@media(max-width: 400px) {
+  .container  .MuiCardContent-root {
+    padding: 5;
+  }
 }

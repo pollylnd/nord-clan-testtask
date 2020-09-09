@@ -103,7 +103,7 @@ export const ingredientUnit = [
     value: 6
   },
   {
-    name: 'по вкусу',
+    name: 'щепотка',
     value: 7
   },
   {
