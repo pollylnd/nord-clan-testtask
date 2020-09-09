@@ -14,8 +14,10 @@
   ```docker-compose build --pull```
 3. Запустить докер
   ```docker-compose up```
-4. Применить бэкап базы данных
-  ```pg_restore -d postgres -h localhost --disable-triggers -U postgres backend.dump```
+4. Применить бэкап базы данных, сначала очистив её
+  - ``` psql postgres://postgres:password@localhost:5432/postgres -c "DROP SCHEMA public CASCADE" ```
+  - ``` psql postgres://postgres:password@localhost:5432/postgres -c "CREATE SCHEMA public" ```
+  - ``` pg_restore -d postgres -h localhost --disable-triggers -U postgres backend.dump ```
   Стандарный пароль: ```password```
 
 ### Запуск клиента:
